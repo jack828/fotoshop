@@ -4,7 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
 
 /**
  * This class is the main processing class of the Fotoshop application. 
@@ -27,10 +31,8 @@ public class Editor {
     Parser parser;
     ColorImage currentImage;
     String name;
-    String filter1;
-    String filter2;
-    String filter3;
-    String filter4;
+    ArrayList<String> filters = new ArrayList<>();
+
    
     /**
      * Create the editor and initialise its parser.
@@ -66,21 +68,15 @@ public class Editor {
         System.out.println();
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        if (filter1 != null) {
-            System.out.print(filter1 + " ");
-        }
-        if (filter2 != null) {
-            System.out.print(filter2 + " ");
-        }
-        if (filter3 != null) {
-            System.out.print(filter3 + " ");
-        }
-        if (filter4 != null) {
-            System.out.print(filter4 + " ");
+        
+        for(String filter: filters){
+            if (filter != null) {
+                System.out.print(filter + " ");
+            }
         }
         System.out.println();
+    
     }
-
     /**
      * Given a command, edit (that is: execute) the command.
      *
@@ -89,30 +85,27 @@ public class Editor {
      */
     private boolean processCommand(Command command) {
         boolean wantToQuit = false;
-
-        if (command.isUnknown()) {
+        
+        if (command.hasWord(1)) {
             System.out.println("I don't know what you mean...");
             return false;
         }
-
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {
-            printHelp();
-        } else if (commandWord.equals("open")) {
-            open(command);
-        } else if (commandWord.equals("save")) {
-            save(command);
-        } else if (commandWord.equals("mono")) {
-            mono(command);
-        } else if (commandWord.equals("rot90")) {
-            rot90(command);
-        } else if (commandWord.equals("look")) {
-            look(command);
-        } else if (commandWord.equals("script")) {
-            wantToQuit = script(command);
-        } else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
+        
+        String commandWord = command.getWord(1);
+        
+        if(commandWord.equals("help"))
+            commandWord = "printHelp";
+        
+        try {
+            Class c = Class.forName("Editor");
+            @SuppressWarnings("unchecked")
+            Method method = c.getDeclaredMethod(commandWord);
+            wantToQuit = (boolean) method.invoke(this);         
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) { 
+            System.out.println("I don't know what you mean...");
+            return false;
         }
+        
         return wantToQuit;
     }
 
@@ -154,23 +147,19 @@ public class Editor {
      * @param command the command given.
      */
     private void open(Command command) {
-        if (!command.hasSecondWord()) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
             return ;
         }
   
-        String inputName = command.getSecondWord();
+        String inputName = command.getWord(2);
         ColorImage img = loadImage(inputName);
         if (img == null) {
             printHelp();
         } else {
             currentImage = img;
             name = inputName;
-            filter1 = null;
-            filter2 = null;
-            filter3 = null;
-            filter4 = null;
             System.out.println("Loaded " + name);
         }
     }
@@ -185,13 +174,13 @@ public class Editor {
             printHelp();
             return;
         }
-        if (!command.hasSecondWord()) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
             System.out.println("save where?");
             return ;
         }
   
-        String outputName = command.getSecondWord();
+        String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
             ImageIO.write(currentImage, "jpg", outputFile);
@@ -209,17 +198,11 @@ public class Editor {
     private void look(Command command) {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        if (filter1 != null) {
-            System.out.print(filter1 + " ");
-        }
-        if (filter2 != null) {
-            System.out.print(filter2 + " ");
-        }
-        if (filter3 != null) {
-            System.out.print(filter3 + " ");
-        }
-        if (filter4 != null) {
-            System.out.print(filter4 + " ");
+        
+        for(String filter: filters){
+            if (filter != null) {
+                System.out.print(filter + " ");
+            }
         }
         System.out.println();
     }
@@ -229,10 +212,6 @@ public class Editor {
      * @param command the command given.
      */
     private void mono(Command command) {
-        if (filter4 != null) {
-            System.out.println("Filter pipeline exceeded");
-            return;
-        }
         
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
@@ -249,15 +228,8 @@ public class Editor {
         }
         currentImage = tmpImage;
 
-        if (filter1 == null) {
-            filter1 = "mono";
-        } else if (filter2 == null) {
-            filter2 = "mono";
-        } else if (filter3 == null) {
-            filter3 = "mono";
-        } else if (filter4 == null) {
-            filter4 = "mono";
-        } 
+        filters.add("mono");
+
     }
     
     /**
@@ -265,10 +237,6 @@ public class Editor {
      * @param command the command given.
      */
     private void rot90(Command command) {
-        if (filter4 != null) {
-            System.out.println("Filter pipeline exceeded");
-            return;
-        }
         
         // R90 = [0 -1, 1 0] rotates around origin
         // (x,y) -> (-y,x)
@@ -283,15 +251,8 @@ public class Editor {
             }
         }
         currentImage = rotImage;
-        if (filter1 == null) {
-            filter1 = "flipH";
-        } else if (filter2 == null) {
-            filter2 = "flipH";
-        } else if (filter3 == null) {
-            filter3 = "flipH";
-        } else if (filter4 == null) {
-            filter4 = "flipH";
-        }
+
+        filters.add("flipH");
     }
     
     /**
@@ -305,13 +266,13 @@ public class Editor {
      * @return whether to quit.
      */
     private boolean script(Command command) {
-        if (!command.hasSecondWord()) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
             System.out.println("which script"); 
             return false;
         }
   
-        String scriptName = command.getSecondWord();
+        String scriptName = command.getWord(2);
         Parser scriptParser = new Parser();
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
             scriptParser.setInputStream(inputStream);
@@ -342,7 +303,7 @@ public class Editor {
      * @return true, if this command quits the editor, false otherwise.
      */
     private boolean quit(Command command) {
-        if (command.hasSecondWord()) {
+        if (command.hasWord(2)) {
             System.out.println("Quit what?");
             return false;
         } else {

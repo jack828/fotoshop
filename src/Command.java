@@ -1,3 +1,6 @@
+
+import java.util.ArrayList;
+
 /**
  * This class is taken from the "World of Zuul" application. 
  * "World of Zuul" is a very simple, text based adventure game.  
@@ -19,6 +22,7 @@
 
 public class Command
 {
+    private ArrayList<String> commandWords = new ArrayList<String>();
     private String commandWord;
     private String secondWord;
     private String thirdWord;
@@ -31,64 +35,30 @@ public class Command
      * @param secondWord The second word of the command.
      * @param thirdWord The second word of the command.
      */
-    public Command(String firstWord, String secondWord, String thirdWord)
+    public Command(ArrayList<String> command)
     {
-        commandWord = firstWord;
-        this.secondWord = secondWord;
-        this.thirdWord = secondWord;
+        commandWords = command;
 
     }
 
     /**
      * Return the command word (the first word) of this command. If the
      * command was not understood, the result is null.
+     * @param index position of word in ArrayList
      * @return The command word.
      */
-    public String getCommandWord()
+    public String getWord(int index)
     {
-        return commandWord;
+        return commandWords.get(index-1);
     }
 
     /**
-     * @return The second word of this command. Returns null if there was no
-     * second word.
-     */
-    public String getSecondWord()
-    {
-        return secondWord;
-    }
-
-    /**
-     * @return The third word of this command. Returns null if there was no
-     * third word.
-     */
-    public String getThirdWord()
-    {
-        return secondWord;
-    }
-    
-    /**
+     * @param index position of word in ArrayList
      * @return true if this command was not understood.
      */
-    public boolean isUnknown()
+    public boolean hasWord(int index)
     {
-        return (commandWord == null);
-    }
-
-    /**
-     * @return true if the command has a second word.
-     */
-    public boolean hasSecondWord()
-    {
-        return (secondWord != null);
-    }
-    
-    /**
-     * @return true if the command has a third word.
-     */
-    public boolean hasThirdWord()
-    {
-        return (thirdWord != null);
+        return (commandWords.size() >= index);
     }
 }
 
