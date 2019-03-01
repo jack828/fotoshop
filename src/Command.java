@@ -72,5 +72,19 @@ public class Command
     {
         return this.words.size() >= index;
     }
+
+    /**
+     * Returns a string representation of the command words
+     *
+     * @return A string representation of the command words
+     */
+
+    public static String getCommands() {
+      String output = "";
+      for (String command : validCommands) {
+        output += command + ' ';
+      }
+      return output;
+    }
 }
 
