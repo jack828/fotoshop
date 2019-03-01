@@ -28,10 +28,10 @@ import java.util.ArrayList;
 
 public class Editor {
 
-    Parser parser;
-    ColorImage currentImage;
-    String name;
-    ArrayList<String> filters = new ArrayList<>();
+    private Parser parser;
+    private ColorImage currentImage;
+    private String name;
+    private ArrayList<String> filters = new ArrayList<>();
 
 
     /**
