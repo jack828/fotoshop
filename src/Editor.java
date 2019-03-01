@@ -85,27 +85,37 @@ public class Editor {
      */
     private boolean processCommand(Command command) {
         boolean wantToQuit = false;
-        
-        if (command.hasWord(1)) {
-            System.out.println("I don't know what you mean...");
+        CommandWords checkWord = new CommandWords();
+        // If word inputted is not in list of Command words
+        if (!command.hasWord(1) || !checkWord.isCommand(command.getWord(1))) {
+            System.out.println("I don't know what you mean..");
             return false;
         }
         
         String commandWord = command.getWord(1);
         
-        if(commandWord.equals("help"))
-            commandWord = "printHelp";
-        
-        try {
-            Class c = Class.forName("Editor");
-            @SuppressWarnings("unchecked")
-            Method method = c.getDeclaredMethod(commandWord);
-            wantToQuit = (boolean) method.invoke(this);         
-        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) { 
-            System.out.println("I don't know what you mean...");
+        // As "help" command is different than method name
+        // And help() has no parameters it is in its own if statement
+        if(commandWord.equals("help")){
+            printHelp();
             return false;
         }
         
+        //Here reflection is used to open the classes via the string inputted by user
+        try {
+            Class c = Class.forName("Editor");
+            Class[] cArgs = new Class[1];
+            cArgs[0] = Command.class;
+            Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
+            wantToQuit = (boolean)method.invoke(this,command);  
+        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) { 
+            System.out.println(e); //<--- DELETE
+            return false;
+        } catch (NoSuchMethodException e){
+            System.out.println("I don't know what you mean...");
+        }
+        
+        // This is important for quit() and script()
         return wantToQuit;
     }
 
@@ -146,11 +156,11 @@ public class Editor {
      * and use as the current image. 
      * @param command the command given.
      */
-    private void open(Command command) {
+    private boolean open(Command command) {
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
-            return ;
+            return false;
         }
   
         String inputName = command.getWord(2);
@@ -162,6 +172,7 @@ public class Editor {
             name = inputName;
             System.out.println("Loaded " + name);
         }
+        return false;
     }
 
     /**
@@ -169,15 +180,15 @@ public class Editor {
      * second word of the command. 
      * @param command the command given
      */
-    private void save(Command command) {
+    private boolean save(Command command) {
         if (currentImage == null) {
             printHelp();
-            return;
+            return false;
         }
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
             System.out.println("save where?");
-            return ;
+            return false;
         }
   
         String outputName = command.getWord(2);
@@ -189,13 +200,14 @@ public class Editor {
             System.out.println(e.getMessage());
             printHelp();
         }
+        return false;
     }
 
     /**
      * "look" was entered. Report the status of the work bench. 
      * @param command the command given.
      */
-    private void look(Command command) {
+    private boolean look(Command command) {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
         
@@ -205,6 +217,7 @@ public class Editor {
             }
         }
         System.out.println();
+        return false;
     }
 
     /**
