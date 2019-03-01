@@ -224,7 +224,11 @@ public class Editor {
      * @param command the command given.
      */
     private void mono(Command command) {
-
+        
+        double redValue = 0.299;
+        double greenValue = 0.587;
+        double blueValue = 0.114;
+        
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
         int height = tmpImage.getHeight();
@@ -232,9 +236,9 @@ public class Editor {
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
                 Color pix = tmpImage.getPixel(x, y);
-                int lum = (int) Math.round(0.299*pix.getRed()
-                                         + 0.587*pix.getGreen()
-                                         + 0.114*pix.getBlue());
+                int lum = (int) Math.round(redValue  *pix.getRed()
+                                         + greenValue*pix.getGreen()
+                                         + blueValue *pix.getBlue());
                 tmpImage.setPixel(x, y, new Color(lum, lum, lum));
             }
         }
