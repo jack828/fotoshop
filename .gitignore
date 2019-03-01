@@ -1,2 +1,5 @@
 /nbproject/private/
 .idea
+/build/
+/dist/
+production/
