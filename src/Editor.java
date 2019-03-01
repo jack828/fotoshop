@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 
 /**
- * This class is the main processing class of the Fotoshop application. 
+ * This class is the main processing class of the Fotoshop application.
  * Fotoshop is a very simple image editing tool. Users can apply a number of
  * filters to an image. That's all. It should really be extended to make it more
  * useful!
@@ -33,7 +33,7 @@ public class Editor {
     String name;
     ArrayList<String> filters = new ArrayList<>();
 
-   
+
     /**
      * Create the editor and initialise its parser.
      */
@@ -68,14 +68,14 @@ public class Editor {
         System.out.println();
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        
+
         for(String filter: filters){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
         }
         System.out.println();
-    
+
     }
     /**
      * Given a command, edit (that is: execute) the command.
@@ -85,36 +85,35 @@ public class Editor {
      */
     private boolean processCommand(Command command) {
         boolean wantToQuit = false;
-        CommandWords checkWord = new CommandWords();
         // If word inputted is not in list of Command words
-        if (!command.hasWord(1) || !checkWord.isCommand(command.getWord(1))) {
+        if (!command.isValid()) {
             System.out.println("I don't know what you mean..");
             return false;
         }
-        
+
         String commandWord = command.getWord(1);
-        
+
         // As "help" command is different than method name
         // And help() has no parameters it is in its own if statement
         if(commandWord.equals("help")){
             printHelp();
             return false;
         }
-        
+
         //Here reflection is used to open the classes via the string inputted by user
         try {
             Class c = Class.forName("Editor");
             Class[] cArgs = new Class[1];
             cArgs[0] = Command.class;
             Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            wantToQuit = (boolean)method.invoke(this,command);  
-        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) { 
+            wantToQuit = (boolean)method.invoke(this,command);
+        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             System.out.println(e); //<--- DELETE
             return false;
         } catch (NoSuchMethodException e){
             System.out.println("I don't know what you mean...");
         }
-        
+
         // This is important for quit() and script()
         return wantToQuit;
     }
@@ -122,7 +121,7 @@ public class Editor {
 //----------------------------------
 // Implementations of user commands:
 //----------------------------------
-    
+
     /**
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
@@ -153,7 +152,7 @@ public class Editor {
 
     /**
      * "open" was entered. Open the file given as the second word of the command
-     * and use as the current image. 
+     * and use as the current image.
      * @param command the command given.
      */
     private boolean open(Command command) {
@@ -162,7 +161,7 @@ public class Editor {
             System.out.println("open what?");
             return false;
         }
-  
+
         String inputName = command.getWord(2);
         ColorImage img = loadImage(inputName);
         if (img == null) {
@@ -176,8 +175,8 @@ public class Editor {
     }
 
     /**
-     * "save" was entered. Save the current image to the file given as the 
-     * second word of the command. 
+     * "save" was entered. Save the current image to the file given as the
+     * second word of the command.
      * @param command the command given
      */
     private boolean save(Command command) {
@@ -190,7 +189,7 @@ public class Editor {
             System.out.println("save where?");
             return false;
         }
-  
+
         String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
@@ -204,13 +203,13 @@ public class Editor {
     }
 
     /**
-     * "look" was entered. Report the status of the work bench. 
+     * "look" was entered. Report the status of the work bench.
      * @param command the command given.
      */
     private boolean look(Command command) {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        
+
         for(String filter: filters){
             if (filter != null) {
                 System.out.print(filter + " ");
@@ -221,11 +220,11 @@ public class Editor {
     }
 
     /**
-     * "mono" was entered. Convert the current image to monochrome. 
+     * "mono" was entered. Convert the current image to monochrome.
      * @param command the command given.
      */
     private void mono(Command command) {
-        
+
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
         int height = tmpImage.getHeight();
@@ -244,13 +243,13 @@ public class Editor {
         filters.add("mono");
 
     }
-    
+
     /**
-     * "rot90" was entered. Rotate the current image 90 degrees. 
+     * "rot90" was entered. Rotate the current image 90 degrees.
      * @param command the command given.
      */
     private void rot90(Command command) {
-        
+
         // R90 = [0 -1, 1 0] rotates around origin
         // (x,y) -> (-y,x)
         // then transate -> (height-y, x)
@@ -267,24 +266,24 @@ public class Editor {
 
         filters.add("flipH");
     }
-    
+
     /**
      * The 'script' command runs a sequence of commands from a
      * text file.
-     * 
+     *
      * IT IS IMPORTANT THAT THIS COMMAND WORKS AS IT CAN BE USED FOR TESTING
-     * 
-     * @param command the script command, second word of which is the name of 
+     *
+     * @param command the script command, second word of which is the name of
      * the script file.
      * @return whether to quit.
      */
     private boolean script(Command command) {
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
-            System.out.println("which script"); 
+            System.out.println("which script");
             return false;
         }
-  
+
         String scriptName = command.getWord(2);
         Parser scriptParser = new Parser();
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
@@ -296,10 +295,10 @@ public class Editor {
                     finished = processCommand(cmd);
                 } catch (Exception ex) {
                     return finished;
-                }               
+                }
             }
             return finished;
-        } 
+        }
         catch (FileNotFoundException ex) {
             System.out.println("Cannot find " + scriptName);
             return false;
@@ -308,7 +307,7 @@ public class Editor {
             throw new RuntimeException("Panic: script barfed!");
         }
     }
-    
+
     /**
      * "Quit" was entered. Check the rest of the command to see whether we
      * really quit the editor.
