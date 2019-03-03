@@ -79,24 +79,48 @@ public class Editor {
         System.out.println();
 
     }
+    /**
+     * A method for calling other methods based on an inputted String and Command
+     * 
+     * @param clazz The class the method is in
+     * @param command The command that will be passed to the method
+     * @param returnBool If the method does not have a void return type this should be true
+     * @return A boolean either given by the method called or False
+     * @throws ClassNotFoundException
+     * @throws NoSuchMethodException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     * @throws InstantiationException 
+     */
+    
     private boolean callMethod(String clazz, Command command, boolean returnBool) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException{
+        // This word should be the name of the method being called
         String commandWord = command.getWord(1);
+        // Default return is false
         boolean wantToQuit = false;
-        Object obj;
+        // The object that will be returned from the returned method
+        Object retu;
+        // Returns a Class type of the Class inputted
         Class c = Class.forName(clazz);
-        if(clazz.equals("Editor")){
-            obj = this;
-        }else{
-            obj = c.newInstance();
-        }
+        
         
         Class[] cArgs = new Class[1];
         cArgs[0] = Command.class;
+        // A Method datatype is created from the first of the command words
         Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-        if(returnBool)
-            wantToQuit = (boolean)method.invoke(obj,command);
-        else
-            method.invoke(this,command);
+        
+        // The method is called either from an object of the clazz
+        // Or if the class is Editor 'this' is used as the object
+        retu = method.invoke(  
+                            (clazz.equals("Editor") ? this : c.newInstance() )  
+                            ,command
+                            );
+        // As only some methods have return types if returnBool is true it is 
+        // converted to a boolean to be returned
+        if(returnBool){
+           wantToQuit = (boolean)retu;
+        }
         
         return wantToQuit;
     }
