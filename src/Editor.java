@@ -8,6 +8,8 @@ import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -77,6 +79,27 @@ public class Editor {
         System.out.println();
 
     }
+    private boolean callMethod(String clazz, Command command, boolean returnBool) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, InstantiationException{
+        String commandWord = command.getWord(1);
+        boolean wantToQuit = false;
+        Object obj;
+        Class c = Class.forName(clazz);
+        if(clazz.equals("Editor")){
+            obj = this;
+        }else{
+            obj = c.newInstance();
+        }
+        
+        Class[] cArgs = new Class[1];
+        cArgs[0] = Command.class;
+        Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
+        if(returnBool)
+            wantToQuit = (boolean)method.invoke(obj,command);
+        else
+            method.invoke(this,command);
+        
+        return wantToQuit;
+    }
     /**
      * Given a command, edit (that is: execute) the command.
      *
@@ -99,19 +122,12 @@ public class Editor {
             printHelp();
             return false;
         }
-
+        
         //Here reflection is used to open the classes via the string inputted by user
         try {
-            Class c = Class.forName("Editor");
-            Class[] cArgs = new Class[1];
-            cArgs[0] = Command.class;
-            Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            wantToQuit = (boolean)method.invoke(this,command);
-        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            System.out.println(e); //<--- DELETE
-            return false;
-        } catch (NoSuchMethodException e){
-            System.out.println("I don't know what you mean...");
+            wantToQuit = callMethod("Editor",command,true);
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | InstantiationException ex) {
+            Logger.getLogger(Editor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         // This is important for quit() and script()
@@ -225,9 +241,9 @@ public class Editor {
      */
     private void mono(Command command) {
         
-        double redValue = 0.299;
+        double redValue   = 0.299;
         double greenValue = 0.587;
-        double blueValue = 0.114;
+        double blueValue  = 0.114;
         
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
