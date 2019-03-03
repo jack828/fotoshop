@@ -4,10 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+
 
 /**
- * This class is the main processing class of the Fotoshop application. 
+ * This class is the main processing class of the Fotoshop application.
  * Fotoshop is a very simple image editing tool. Users can apply a number of
  * filters to an image. That's all. It should really be extended to make it more
  * useful!
@@ -24,14 +28,12 @@ import javax.imageio.ImageIO;
 
 public class Editor {
 
-    Parser parser;
-    ColorImage currentImage;
-    String name;
-    String filter1;
-    String filter2;
-    String filter3;
-    String filter4;
-   
+    private Parser parser;
+    private ColorImage currentImage;
+    private String name;
+    private ArrayList<String> filters = new ArrayList<>();
+
+
     /**
      * Create the editor and initialise its parser.
      */
@@ -66,21 +68,15 @@ public class Editor {
         System.out.println();
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        if (filter1 != null) {
-            System.out.print(filter1 + " ");
-        }
-        if (filter2 != null) {
-            System.out.print(filter2 + " ");
-        }
-        if (filter3 != null) {
-            System.out.print(filter3 + " ");
-        }
-        if (filter4 != null) {
-            System.out.print(filter4 + " ");
+
+        for(String filter: filters){
+            if (filter != null) {
+                System.out.print(filter + " ");
+            }
         }
         System.out.println();
-    }
 
+    }
     /**
      * Given a command, edit (that is: execute) the command.
      *
@@ -89,37 +85,43 @@ public class Editor {
      */
     private boolean processCommand(Command command) {
         boolean wantToQuit = false;
-
-        if (command.isUnknown()) {
-            System.out.println("I don't know what you mean...");
+        // If word inputted is not in list of Command words
+        if (!command.isValid()) {
+            System.out.println("I don't know what you mean..");
             return false;
         }
 
-        String commandWord = command.getCommandWord();
-        if (commandWord.equals("help")) {
+        String commandWord = command.getWord(1);
+
+        // As "help" command is different than method name
+        // And help() has no parameters it is in its own if statement
+        if(commandWord.equals("help")){
             printHelp();
-        } else if (commandWord.equals("open")) {
-            open(command);
-        } else if (commandWord.equals("save")) {
-            save(command);
-        } else if (commandWord.equals("mono")) {
-            mono(command);
-        } else if (commandWord.equals("rot90")) {
-            rot90(command);
-        } else if (commandWord.equals("look")) {
-            look(command);
-        } else if (commandWord.equals("script")) {
-            wantToQuit = script(command);
-        } else if (commandWord.equals("quit")) {
-            wantToQuit = quit(command);
+            return false;
         }
+
+        //Here reflection is used to open the classes via the string inputted by user
+        try {
+            Class c = Class.forName("Editor");
+            Class[] cArgs = new Class[1];
+            cArgs[0] = Command.class;
+            Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
+            wantToQuit = (boolean)method.invoke(this,command);
+        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            System.out.println(e); //<--- DELETE
+            return false;
+        } catch (NoSuchMethodException e){
+            System.out.println("I don't know what you mean...");
+        }
+
+        // This is important for quit() and script()
         return wantToQuit;
     }
 
 //----------------------------------
 // Implementations of user commands:
 //----------------------------------
-    
+
     /**
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
@@ -128,7 +130,7 @@ public class Editor {
         System.out.println("You are using Fotoshop.");
         System.out.println();
         System.out.println("Your command words are:");
-        System.out.println("   open save look mono flipH rot90 help quit");
+        System.out.println(Command.getCommands());
     }
 
     /**
@@ -150,48 +152,45 @@ public class Editor {
 
     /**
      * "open" was entered. Open the file given as the second word of the command
-     * and use as the current image. 
+     * and use as the current image.
      * @param command the command given.
      */
-    private void open(Command command) {
-        if (!command.hasSecondWord()) {
+    private boolean open(Command command) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
-            return ;
+            return false;
         }
-  
-        String inputName = command.getSecondWord();
+
+        String inputName = command.getWord(2);
         ColorImage img = loadImage(inputName);
         if (img == null) {
             printHelp();
         } else {
             currentImage = img;
             name = inputName;
-            filter1 = null;
-            filter2 = null;
-            filter3 = null;
-            filter4 = null;
             System.out.println("Loaded " + name);
         }
+        return false;
     }
 
     /**
-     * "save" was entered. Save the current image to the file given as the 
-     * second word of the command. 
+     * "save" was entered. Save the current image to the file given as the
+     * second word of the command.
      * @param command the command given
      */
-    private void save(Command command) {
+    private boolean save(Command command) {
         if (currentImage == null) {
             printHelp();
-            return;
+            return false;
         }
-        if (!command.hasSecondWord()) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
             System.out.println("save where?");
-            return ;
+            return false;
         }
-  
-        String outputName = command.getSecondWord();
+
+        String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
             ImageIO.write(currentImage, "jpg", outputFile);
@@ -200,39 +199,35 @@ public class Editor {
             System.out.println(e.getMessage());
             printHelp();
         }
+        return false;
     }
 
     /**
-     * "look" was entered. Report the status of the work bench. 
+     * "look" was entered. Report the status of the work bench.
      * @param command the command given.
      */
-    private void look(Command command) {
+    private boolean look(Command command) {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
-        if (filter1 != null) {
-            System.out.print(filter1 + " ");
-        }
-        if (filter2 != null) {
-            System.out.print(filter2 + " ");
-        }
-        if (filter3 != null) {
-            System.out.print(filter3 + " ");
-        }
-        if (filter4 != null) {
-            System.out.print(filter4 + " ");
+
+        for(String filter: filters){
+            if (filter != null) {
+                System.out.print(filter + " ");
+            }
         }
         System.out.println();
+        return false;
     }
 
     /**
-     * "mono" was entered. Convert the current image to monochrome. 
+     * "mono" was entered. Convert the current image to monochrome.
      * @param command the command given.
      */
     private void mono(Command command) {
-        if (filter4 != null) {
-            System.out.println("Filter pipeline exceeded");
-            return;
-        }
+        
+        double redValue = 0.299;
+        double greenValue = 0.587;
+        double blueValue = 0.114;
         
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
@@ -241,35 +236,24 @@ public class Editor {
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
                 Color pix = tmpImage.getPixel(x, y);
-                int lum = (int) Math.round(0.299*pix.getRed()
-                                         + 0.587*pix.getGreen()
-                                         + 0.114*pix.getBlue());
+                int lum = (int) Math.round(redValue  *pix.getRed()
+                                         + greenValue*pix.getGreen()
+                                         + blueValue *pix.getBlue());
                 tmpImage.setPixel(x, y, new Color(lum, lum, lum));
             }
         }
         currentImage = tmpImage;
 
-        if (filter1 == null) {
-            filter1 = "mono";
-        } else if (filter2 == null) {
-            filter2 = "mono";
-        } else if (filter3 == null) {
-            filter3 = "mono";
-        } else if (filter4 == null) {
-            filter4 = "mono";
-        } 
+        filters.add("mono");
+
     }
-    
+
     /**
-     * "rot90" was entered. Rotate the current image 90 degrees. 
+     * "rot90" was entered. Rotate the current image 90 degrees.
      * @param command the command given.
      */
     private void rot90(Command command) {
-        if (filter4 != null) {
-            System.out.println("Filter pipeline exceeded");
-            return;
-        }
-        
+
         // R90 = [0 -1, 1 0] rotates around origin
         // (x,y) -> (-y,x)
         // then transate -> (height-y, x)
@@ -283,35 +267,28 @@ public class Editor {
             }
         }
         currentImage = rotImage;
-        if (filter1 == null) {
-            filter1 = "flipH";
-        } else if (filter2 == null) {
-            filter2 = "flipH";
-        } else if (filter3 == null) {
-            filter3 = "flipH";
-        } else if (filter4 == null) {
-            filter4 = "flipH";
-        }
+
+        filters.add("flipH");
     }
-    
+
     /**
      * The 'script' command runs a sequence of commands from a
      * text file.
-     * 
+     *
      * IT IS IMPORTANT THAT THIS COMMAND WORKS AS IT CAN BE USED FOR TESTING
-     * 
-     * @param command the script command, second word of which is the name of 
+     *
+     * @param command the script command, second word of which is the name of
      * the script file.
      * @return whether to quit.
      */
     private boolean script(Command command) {
-        if (!command.hasSecondWord()) {
+        if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
-            System.out.println("which script"); 
+            System.out.println("which script");
             return false;
         }
-  
-        String scriptName = command.getSecondWord();
+
+        String scriptName = command.getWord(2);
         Parser scriptParser = new Parser();
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
             scriptParser.setInputStream(inputStream);
@@ -322,10 +299,10 @@ public class Editor {
                     finished = processCommand(cmd);
                 } catch (Exception ex) {
                     return finished;
-                }               
+                }
             }
             return finished;
-        } 
+        }
         catch (FileNotFoundException ex) {
             System.out.println("Cannot find " + scriptName);
             return false;
@@ -334,7 +311,7 @@ public class Editor {
             throw new RuntimeException("Panic: script barfed!");
         }
     }
-    
+
     /**
      * "Quit" was entered. Check the rest of the command to see whether we
      * really quit the editor.
@@ -342,7 +319,7 @@ public class Editor {
      * @return true, if this command quits the editor, false otherwise.
      */
     private boolean quit(Command command) {
-        if (command.hasSecondWord()) {
+        if (command.hasWord(2)) {
             System.out.println("Quit what?");
             return false;
         } else {
