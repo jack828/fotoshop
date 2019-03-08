@@ -61,7 +61,6 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-        System.out.println(String.format())
         System.out.println("Welcome to Fotoshop!");
         System.out.println("Fotoshop is an amazing new, image editing tool.");
         System.out.println("Type 'help' if you need help.");
