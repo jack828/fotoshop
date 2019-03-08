@@ -101,7 +101,7 @@ public class Editor {
             Class[] cArgs = new Class[1];
             cArgs[0] = Command.class;
             Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            wantToQuit = (boolean)method.invoke(this,command);
+            wantToQuit = (boolean)method.invoke(this, command);
         } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             System.out.println(e); //<--- DELETE
             return false;
@@ -150,7 +150,7 @@ public class Editor {
      * @param command the command given.
      */
     private boolean open(Command command) {
-      int fileName = 2;
+        int fileName = 2;
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
@@ -224,11 +224,11 @@ public class Editor {
      * @param command the command given.
      */
     private void mono(Command command) {
-        
+
         double redValue = 0.299;
         double greenValue = 0.587;
         double blueValue = 0.114;
-        
+
         ColorImage tmpImage = new ColorImage(currentImage);
         //Graphics2D g2 = currentImage.createGraphics();
         int height = tmpImage.getHeight();
