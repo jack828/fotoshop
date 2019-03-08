@@ -61,7 +61,7 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-        System.out.println();
+        System.out.println(String.format())
         System.out.println("Welcome to Fotoshop!");
         System.out.println("Fotoshop is an amazing new, image editing tool.");
         System.out.println("Type 'help' if you need help.");
@@ -69,7 +69,7 @@ public class Editor {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
 
-        for(String filter: filters){
+        for(String filter : filters){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
