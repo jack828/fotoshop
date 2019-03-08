@@ -30,8 +30,6 @@ public class Editor {
     private Parser parser;
     private Image currentImage;
     private String name;
-    private ArrayList<String> filters = new ArrayList<>();
-
 
     /**
      * Create the editor and initialise its parser.
@@ -48,6 +46,7 @@ public class Editor {
 
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
+      // TODO: move to class variable?
         boolean finished = false;
         while (!finished) {
             Command command = parser.getCommand();
@@ -62,16 +61,9 @@ public class Editor {
     private void printWelcome() {
       // TODO: print current working directory
         System.out.println("Welcome to Fotoshop!\nFotoshop is an amazing new image editing tool.\n" +
-          "Type 'help' if you need help.\n\nThe current image is: " + name + "\nFilters applied: ");
-
-        for(String filter : filters){
-            if (filter != null) {
-                System.out.print(filter + " ");
-            }
-        }
-
-        System.out.println();
+          "Type 'help' if you need help.\n\nThe current image is: " + name + "\nFilters applied: none");
     }
+
     /**
      * Given a command, edit (that is: execute) the command.
      *
@@ -79,38 +71,43 @@ public class Editor {
      * @return true If the command ends the editing session, false otherwise.
      */
     private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
-        // If word inputted is not in list of Command words
-        if (!command.isValid()) {
-            System.out.println("I don't know what you mean..");
-            return wantToQuit;
-        }
-
-        String commandWord = command.getWord(1);
-
-        // As "help" command is different than method name
-        // And help() has no parameters it is in its own if statement
-        if (commandWord.equals("help")) {
-            printHelp();
-            return wantToQuit;
-        }
-
-        //Here reflection is used to open the classes via the string inputted by user
-        try {
-            Class c = Class.forName("Editor");
-            Class[] cArgs = new Class[1];
-            cArgs[0] = Command.class;
-            Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            wantToQuit = (boolean)method.invoke(this, command);
-        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            System.out.println(e); //<--- DELETE
-            return false;
-        } catch (NoSuchMethodException e){
-            System.out.println("I don't know what you mean...");
-        }
-
-        // This is important for quit() and script()
+      Boolean wantToQuit = false;
+      // If word inputted is not in list of Command words
+      if (!command.isValid()) {
+        System.out.println("I don't know what you mean..");
         return wantToQuit;
+      }
+
+      String commandWord = command.getWord(1);
+
+      String commandClass = command.getCommandClass();
+
+      try {
+          Class c = Class.forName(commandClass);
+          Class[] cArgs = new Class[1];
+          cArgs[0] = Command.class;
+          Method method;
+          Boolean result = false;
+
+          if (commandClass.equals("Editor")) {
+            method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
+            result = (Boolean) method.invoke(this, command);
+          } else {
+            method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+            method.invoke(this.currentImage);
+          }
+          // TODO remove
+          if (result == null) wantToQuit = false;
+          else wantToQuit = result;
+      } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+          System.out.println(e); //<--- DELETE
+          return wantToQuit;
+      } catch (NoSuchMethodException e) {
+          System.out.println("No such method: \"" + commandWord + "\"");
+      }
+
+      // This is important for quit() and script()
+      return wantToQuit;
     }
 
 //----------------------------------
@@ -121,8 +118,8 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-    private void printHelp() {
-        System.out.println("You are using Fotoshop.\n" + "Your command words are:\n" + Command.getCommands());
+    private void help(Command command) {
+      System.out.println("You are using Fotoshop.\n" + "Your command words are:\n" + Command.getCommands());
     }
 
     /**
@@ -161,7 +158,7 @@ public class Editor {
         ColorImage img = loadImage(inputName);
 
         if (img == null) {
-            printHelp();
+            help(command);
         } else {
             currentImage = new Image(img);
             // TODO: put image name in the Image class
@@ -179,7 +176,7 @@ public class Editor {
      */
     private boolean save(Command command) {
         if (currentImage == null) {
-            printHelp();
+            help(command);
             return false;
         }
 
@@ -196,7 +193,7 @@ public class Editor {
             System.out.println("Image saved to " + outputName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            printHelp();
+            help(command);
         }
 
         return false;

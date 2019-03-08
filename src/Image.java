@@ -17,7 +17,6 @@ public class Image {
   public Image(ColorImage image) {
     this.image = image;
     this.filters = new ArrayList<>();
-
   }
 
   /**
@@ -42,7 +41,7 @@ public class Image {
    * and update internal image reference
    *
    */
-  private void mono() {
+  public void mono() {
 
     double redValue = 0.299;
     double greenValue = 0.587;
@@ -72,7 +71,7 @@ public class Image {
    * and update the internal image reference.
    *
    */
-  private void rot90() {
+  public void rot90() {
 
     // R90 = [0 -1, 1 0] rotates around origin
     // (x,y) -> (-y,x)
