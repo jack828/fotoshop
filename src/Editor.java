@@ -201,7 +201,11 @@ public class Editor {
     /**
      * "look" was entered. Report the status of the work bench.
      */
-    private boolean look() {
+    private boolean look(Command command) {
+        if (currentImage == null) {
+          System.out.println("No image loaded");
+          return false;
+        }
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
 
