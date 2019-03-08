@@ -84,8 +84,7 @@ public class Editor {
 
       try {
           Class c = Class.forName(commandClass);
-          Class[] cArgs = new Class[1];
-          cArgs[0] = Command.class;
+          Class[] cArgs = { Command.class };
           Method method;
           Boolean result = false;
 
