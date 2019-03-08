@@ -61,20 +61,16 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-        System.out.println("Welcome to Fotoshop!");
-        System.out.println("Fotoshop is an amazing new, image editing tool.");
-        System.out.println("Type 'help' if you need help.");
-        System.out.println();
-        System.out.println("The current image is " + name);
-        System.out.print("Filters applied: ");
+        System.out.println("Welcome to Fotoshop!\nFotoshop is an amazing new image editing tool.\n" +
+          "Type 'help' if you need help.\n\nThe current image is: " + name + "\nFilters applied: ");
 
         for(String filter : filters){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
         }
-        System.out.println();
 
+        System.out.println();
     }
     /**
      * Given a command, edit (that is: execute) the command.
@@ -126,10 +122,7 @@ public class Editor {
      * message and a list of the command words.
      */
     private void printHelp() {
-        System.out.println("You are using Fotoshop.");
-        System.out.println();
-        System.out.println("Your command words are:");
-        System.out.println(Command.getCommands());
+        System.out.println("You are using Fotoshop.\n" + "Your command words are:\n" + Command.getCommands());
     }
 
     /**
@@ -139,12 +132,14 @@ public class Editor {
      */
     private ColorImage loadImage(String name) {
         ColorImage img = null;
+
         try {
             img = new ColorImage(ImageIO.read(new File(name)));
         } catch (IOException e) {
             System.out.println("Cannot find image file, " + name);
             System.out.println("cwd is " + System.getProperty("user.dir"));
         }
+
         return img;
     }
 
@@ -155,7 +150,8 @@ public class Editor {
      * @param command the command given.
      */
     private boolean open(Command command) {
-        if (!command.hasWord(2)) {
+      int fileName = 2;
+        if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
             System.out.println("open what?");
             return false;
@@ -163,6 +159,7 @@ public class Editor {
 
         String inputName = command.getWord(2);
         ColorImage img = loadImage(inputName);
+
         if (img == null) {
             printHelp();
         } else {
@@ -170,6 +167,7 @@ public class Editor {
             name = inputName;
             System.out.println("Loaded " + name);
         }
+
         return false;
     }
 
@@ -183,6 +181,7 @@ public class Editor {
             printHelp();
             return false;
         }
+
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
             System.out.println("save where?");
@@ -198,6 +197,7 @@ public class Editor {
             System.out.println(e.getMessage());
             printHelp();
         }
+
         return false;
     }
 
@@ -214,6 +214,7 @@ public class Editor {
                 System.out.print(filter + " ");
             }
         }
+
         System.out.println();
         return false;
     }
@@ -232,6 +233,7 @@ public class Editor {
         //Graphics2D g2 = currentImage.createGraphics();
         int height = tmpImage.getHeight();
         int width = tmpImage.getWidth();
+
         for (int y=0; y<height; y++) {
             for (int x=0; x<width; x++) {
                 Color pix = tmpImage.getPixel(x, y);
@@ -259,6 +261,7 @@ public class Editor {
         int height = currentImage.getHeight();
         int width = currentImage.getWidth();
         ColorImage rotImage = new ColorImage(height, width);
+
         for (int y=0; y<height; y++) { // in the rotated image
             for (int x=0; x<width; x++) {
                 Color pix = currentImage.getPixel(x,y);
@@ -289,6 +292,7 @@ public class Editor {
 
         String scriptName = command.getWord(2);
         Parser scriptParser = new Parser();
+
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
             scriptParser.setInputStream(inputStream);
             boolean finished = false;
