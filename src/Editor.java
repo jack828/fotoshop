@@ -1,5 +1,4 @@
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -29,7 +28,7 @@ import java.util.ArrayList;
 public class Editor {
 
     private Parser parser;
-    private ColorImage currentImage;
+    private Image currentImage;
     private String name;
     private ArrayList<String> filters = new ArrayList<>();
 
@@ -61,6 +60,7 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
+      // TODO: print current working directory
         System.out.println("Welcome to Fotoshop!\nFotoshop is an amazing new image editing tool.\n" +
           "Type 'help' if you need help.\n\nThe current image is: " + name + "\nFilters applied: ");
 
@@ -83,16 +83,16 @@ public class Editor {
         // If word inputted is not in list of Command words
         if (!command.isValid()) {
             System.out.println("I don't know what you mean..");
-            return false;
+            return wantToQuit;
         }
 
         String commandWord = command.getWord(1);
 
         // As "help" command is different than method name
         // And help() has no parameters it is in its own if statement
-        if(commandWord.equals("help")){
+        if (commandWord.equals("help")) {
             printHelp();
-            return false;
+            return wantToQuit;
         }
 
         //Here reflection is used to open the classes via the string inputted by user
@@ -163,7 +163,8 @@ public class Editor {
         if (img == null) {
             printHelp();
         } else {
-            currentImage = img;
+            currentImage = new Image(img);
+            // TODO: put image name in the Image class
             name = inputName;
             System.out.println("Loaded " + name);
         }
@@ -191,7 +192,7 @@ public class Editor {
         String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
-            ImageIO.write(currentImage, "jpg", outputFile);
+            ImageIO.write(currentImage.getImage(), "jpg", outputFile);
             System.out.println("Image saved to " + outputName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
@@ -203,13 +204,12 @@ public class Editor {
 
     /**
      * "look" was entered. Report the status of the work bench.
-     * @param command the command given.
      */
-    private boolean look(Command command) {
+    private boolean look() {
         System.out.println("The current image is " + name);
         System.out.print("Filters applied: ");
 
-        for(String filter: filters){
+        for(String filter: currentImage.getFilters()){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
@@ -217,60 +217,6 @@ public class Editor {
 
         System.out.println();
         return false;
-    }
-
-    /**
-     * "mono" was entered. Convert the current image to monochrome.
-     * @param command the command given.
-     */
-    private void mono(Command command) {
-
-        double redValue = 0.299;
-        double greenValue = 0.587;
-        double blueValue = 0.114;
-
-        ColorImage tmpImage = new ColorImage(currentImage);
-        //Graphics2D g2 = currentImage.createGraphics();
-        int height = tmpImage.getHeight();
-        int width = tmpImage.getWidth();
-
-        for (int y=0; y<height; y++) {
-            for (int x=0; x<width; x++) {
-                Color pix = tmpImage.getPixel(x, y);
-                int lum = (int) Math.round(redValue  *pix.getRed()
-                                         + greenValue*pix.getGreen()
-                                         + blueValue *pix.getBlue());
-                tmpImage.setPixel(x, y, new Color(lum, lum, lum));
-            }
-        }
-        currentImage = tmpImage;
-
-        filters.add("mono");
-
-    }
-
-    /**
-     * "rot90" was entered. Rotate the current image 90 degrees.
-     * @param command the command given.
-     */
-    private void rot90(Command command) {
-
-        // R90 = [0 -1, 1 0] rotates around origin
-        // (x,y) -> (-y,x)
-        // then transate -> (height-y, x)
-        int height = currentImage.getHeight();
-        int width = currentImage.getWidth();
-        ColorImage rotImage = new ColorImage(height, width);
-
-        for (int y=0; y<height; y++) { // in the rotated image
-            for (int x=0; x<width; x++) {
-                Color pix = currentImage.getPixel(x,y);
-                rotImage.setPixel(height-y-1,x, pix);
-            }
-        }
-        currentImage = rotImage;
-
-        filters.add("flipH");
     }
 
     /**
