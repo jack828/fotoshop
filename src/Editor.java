@@ -52,10 +52,12 @@ public class Editor {
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
         boolean finished = false;
+        // Uses boolean which originates from quit() & script() 
         while (!finished) {
             Command command = parser.getCommand();
             finished = processCommand(command);
         }
+        
         System.out.println("Thank you for using Fotoshop.  Good bye.");
     }
 
