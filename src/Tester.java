@@ -16,8 +16,8 @@ public class Tester {
         ArrayList<String> words;
         words = new ArrayList<String>();
         words.add("Open");
-        Command c = new Command(words);
+        Command command = new Command(words);
         
-        System.out.println(c.hasWord(2));
+        System.out.println(command.hasWord(2));
     }
 }

@@ -81,9 +81,11 @@ public class Command
 
     public static String getCommands() {
       String output = "";
+
       for (String command : validCommands) {
         output += command + ' ';
       }
+
       return output;
     }
 }

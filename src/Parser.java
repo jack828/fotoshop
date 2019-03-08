@@ -47,6 +47,7 @@ public class Parser
 
         // Find up to two words on the line.
         Scanner tokenizer = new Scanner(inputLine);
+
         while(tokenizer.hasNext()){
             words.add(tokenizer.next());
         }
