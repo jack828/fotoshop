@@ -37,7 +37,7 @@ public class I18N {
      *  (E.g. 'japanese')
      */
     public static void setLanguage(String language) {
-        if (SETS.size() == 0) {
+        if (SETS.isEmpty()) {
           initialise();
         }
 
