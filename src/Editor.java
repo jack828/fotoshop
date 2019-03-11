@@ -70,7 +70,7 @@ public class Editor {
      */
     public HashMap<String, String> returnLanguageHashMap(String language){
         HashMap<String, String> languageHashMap = new HashMap();
-        I18N.setLanguage("default");
+        I18N.setLanguage(language);
 
         for(String key : EDITORTEXTSKEY){
             languageHashMap.put(key, I18N.getString(key));

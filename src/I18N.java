@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class I18N {
 
-    private static Map<String, String[]> SETS = new HashMap<>();
+    private static Map<String, String[]> LANGUAGESETS = initialise();
     private static ResourceBundle message;
     private static Locale locale;
 
@@ -23,12 +23,15 @@ public class I18N {
      */
     private I18N() {}
 
-    private static void initialise () {
+    private static Map<String, String[]> initialise () {
+      Map<String, String[]> sets = new HashMap<>();
         /* Language settings should be inserted below for initiaization purposes
            Ideally all of this values below should be moved to a properties file as well to facilitate testing */
-      SETS.put("default", new String[]{ "en", "US", "default" });
-      SETS.put("japanese", new String[]{ "jp", "JP", "testProperties" });
-      SETS.put("nonexistent", new String[]{ "en", "US", "nonexistent" });
+      sets.put("default", new String[]{ "en", "US", "default" });
+      sets.put("japanese", new String[]{ "jp", "JP", "testProperties" });
+      sets.put("nonexistent", new String[]{ "en", "US", "nonexistent" });
+      
+      return sets;
     }
 
     /** Sets the I18N module to the desired language
@@ -37,11 +40,8 @@ public class I18N {
      *  (E.g. 'japanese')
      */
     public static void setLanguage(String language) {
-        if (SETS.isEmpty()) {
-          initialise();
-        }
 
-        String[] set = SETS.get(language);
+        String[] set = LANGUAGESETS.get(language);
         locale = (set != null) ? new Locale(set[0], set[1]) : null;
 
         if(set == null) {
@@ -69,7 +69,6 @@ public class I18N {
         try {
             return message.getString(words);
         } catch (MissingResourceException | NullPointerException e){
-            System.out.printf("Error: %s", e);
             return null;
         }
     }
