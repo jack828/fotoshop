@@ -31,8 +31,6 @@ public class Editor {
     private Parser parser;
     private ColorImage currentImage;
     private String name;
-    private ArrayList<String> filters = new ArrayList<>();
-
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
         "welcome",
@@ -99,11 +97,12 @@ public class Editor {
      */
     private void printWelcome() {
         System.out.printf(i18nWordsMapping.get("welcome"), name);
-
-        for(String filter : filters){
+        if (currentImage != null) {
+          for (String filter : currentImage.appliedFilters) {
             if (filter != null) {
-                System.out.print(filter + " ");
+              System.out.print(filter + " ");
             }
+          }
         }
 
         System.out.println();
@@ -186,6 +185,7 @@ public class Editor {
      * @param command the command given.
      */
     private boolean open(Command command) {
+        currentImage.changes.push(currentImage);
         int fileName = 2;
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
@@ -245,7 +245,7 @@ public class Editor {
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
         System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
 
-        for(String filter: filters){
+        for(String filter: currentImage.appliedFilters){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
@@ -279,10 +279,10 @@ public class Editor {
                 tmpImage.setPixel(x, y, new Color(lum, lum, lum));
             }
         }
-        currentImage = tmpImage;
 
-        filters.add("mono");
+      currentImage.appliedFilters.add("mono");
 
+      currentImage = tmpImage;
     }
 
     /**
@@ -306,7 +306,7 @@ public class Editor {
         }
         currentImage = rotImage;
 
-        filters.add("flipH");
+        currentImage.appliedFilters.add("flipH");
     }
 
     /**
@@ -364,5 +364,9 @@ public class Editor {
         } else {
             return true;  // signal that we want to quit
         }
+    }
+
+    private void undo(){
+      currentImage = currentImage.changes.pop();
     }
 }

@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.image.*;
+import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * Extends standard BufferedImage class with convenience functions
@@ -16,6 +18,8 @@ import java.awt.image.*;
 
 public class ColorImage extends BufferedImage
 {
+  public ArrayList<String> appliedFilters;
+  public Stack<ColorImage> changes;
     /**
      * Create a ColorImage copied from a BufferedImage
      * Convert to 24-bit direct colour
@@ -24,6 +28,8 @@ public class ColorImage extends BufferedImage
     public ColorImage(BufferedImage image)
     {
         super(image.getWidth(), image.getHeight(), TYPE_INT_RGB);
+        this.appliedFilters = new ArrayList<>();
+        this.changes = new Stack<>();
         int width = image.getWidth();
         int height = image.getHeight();
         for (int y=0; y<height; y++)
