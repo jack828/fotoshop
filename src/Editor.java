@@ -1,5 +1,5 @@
 
-import java.awt.Color;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -30,10 +30,11 @@ import java.util.Scanner;
 public class Editor {
 
     private Parser parser;
-    private ColorImage currentImage;
+    private Image currentImage;
     private String name;
     private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
+    private static Editor editor;
 
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
@@ -55,13 +56,21 @@ public class Editor {
         "quitWhat"
     };
     
+
     /**
      * Create the editor and initialise its parser.
      */
-    public Editor() {
-        parser = new Parser();
-        reader = new Scanner(System.in);
-        i18nWordsMapping = returnLanguageHashMap("default");
+    private Editor() {
+        this.parser = new Parser();
+        this.reader = new Scanner(System.in);
+        this.i18nWordsMapping = returnLanguageHashMap("default");
+    }
+    
+    public static Editor getInstence(){
+        if(editor == null){
+            Editor.editor = new Editor();
+        }
+        return editor;
     }
 
     /**
@@ -89,6 +98,7 @@ public class Editor {
 
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
+      // TODO: move to class variable?
         boolean finished = false;
         while (!finished) {
             Command command = getCommand();
@@ -129,15 +139,14 @@ public class Editor {
         //
         //"The current image is " + name       
         System.out.printf(i18nWordsMapping.get("welcome"), name);
-
+        System.out.println();
         for(String filter : filters){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
         }
-
-        System.out.println();
     }
+
     /**
      * Given a command, edit (that is: execute) the command.
      *
@@ -177,8 +186,19 @@ public class Editor {
             System.out.println(i18nWordsMapping.get("iDontKnow"));
         }
 
-        // This is important for quit() and script()
+      // If word inputted is not in list of Command words
+      if (!command.isValid()) {
+        System.out.println("I don't know what you mean..");
         return wantToQuit;
+      }
+
+      commandWord = command.getWord(1);
+
+      String commandClass = command.getCommandClass();
+
+
+      // This is important for quit() and script()
+      return wantToQuit;
     }
 
 //----------------------------------
@@ -189,6 +209,7 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
+
     private void printHelp() {
         // Says:
         //"You are using Fotoshop."
@@ -196,6 +217,7 @@ public class Editor {
         //"Your command words are:"
         //"   open save look mono flipH rot90 help quit"
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+        System.out.println();
     }
 
     /**
@@ -211,10 +233,10 @@ public class Editor {
         } catch (IOException e) {
             // Says: "Cannot find image file, "
             System.out.printf(i18nWordsMapping.get("cannotFindImageFile"), name);
-            System.out.print("\n");
+            System.out.println();
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.print("aaa\n");            
+            System.out.println();          
         }
 
         return img;
@@ -231,7 +253,7 @@ public class Editor {
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
             // Says: "open what?"
-            System.out.println(i18nWordsMapping.get("openWhat"));
+            System.out.println(i18nWordsMapping.get("openWhat") + "<--");
             return false;
         }
 
@@ -241,10 +263,12 @@ public class Editor {
         if (img == null) {
             printHelp();
         } else {
-            currentImage = img;
+            currentImage = new Image(img);
+            // TODO: put image name in the Image class
             name = inputName;
             // Says: "Loaded "
             System.out.printf(i18nWordsMapping.get("loaded"), name);
+            System.out.println();
         }
 
         return false;
@@ -271,9 +295,10 @@ public class Editor {
         String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
-            ImageIO.write(currentImage, "jpg", outputFile);
+            ImageIO.write((RenderedImage) currentImage, "jpg", outputFile);
             // Says: "Image saved to " + outputName
             System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
+            System.out.println();
         } catch (IOException e) {
             System.out.println(e.getMessage());
             printHelp();
@@ -284,15 +309,24 @@ public class Editor {
 
     /**
      * "look" was entered. Report the status of the work bench.
-     * @param command the command given.
      */
     private boolean look(Command command) {
         //Says: "The current image is " + name
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
+        System.out.println();
         //Says: "Filters applied: "
         System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
+        System.out.println();
+        
+        if (currentImage == null) {
+          System.out.println("No image loaded");
+          return false;
+        }
+        System.out.println("The current image is " + name);
+        System.out.print("Filters applied: ");
 
-        for(String filter: filters){
+
+        for(String filter: currentImage.getFilters()){
             if (filter != null) {
                 System.out.print(filter + " ");
             }
@@ -300,60 +334,6 @@ public class Editor {
 
         System.out.println();
         return false;
-    }
-
-    /**
-     * "mono" was entered. Convert the current image to monochrome.
-     * @param command the command given.
-     */
-    private void mono(Command command) {
-
-        double redValue = 0.299;
-        double greenValue = 0.587;
-        double blueValue = 0.114;
-
-        ColorImage tmpImage = new ColorImage(currentImage);
-        //Graphics2D g2 = currentImage.createGraphics();
-        int height = tmpImage.getHeight();
-        int width = tmpImage.getWidth();
-
-        for (int y=0; y<height; y++) {
-            for (int x=0; x<width; x++) {
-                Color pix = tmpImage.getPixel(x, y);
-                int lum = (int) Math.round(redValue  *pix.getRed()
-                                         + greenValue*pix.getGreen()
-                                         + blueValue *pix.getBlue());
-                tmpImage.setPixel(x, y, new Color(lum, lum, lum));
-            }
-        }
-        currentImage = tmpImage;
-
-        filters.add("mono");
-
-    }
-
-    /**
-     * "rot90" was entered. Rotate the current image 90 degrees.
-     * @param command the command given.
-     */
-    private void rot90(Command command) {
-
-        // R90 = [0 -1, 1 0] rotates around origin
-        // (x,y) -> (-y,x)
-        // then transate -> (height-y, x)
-        int height = currentImage.getHeight();
-        int width = currentImage.getWidth();
-        ColorImage rotImage = new ColorImage(height, width);
-
-        for (int y=0; y<height; y++) { // in the rotated image
-            for (int x=0; x<width; x++) {
-                Color pix = currentImage.getPixel(x,y);
-                rotImage.setPixel(height-y-1,x, pix);
-            }
-        }
-        currentImage = rotImage;
-
-        filters.add("flipH");
     }
 
     /**
@@ -393,6 +373,7 @@ public class Editor {
         catch (FileNotFoundException ex) {
             // Says: "Cannot find " + scriptName
             System.out.printf(i18nWordsMapping.get("cannotFind"), scriptName);
+            System.out.println();
             return false;
         }
         catch (IOException ex) {

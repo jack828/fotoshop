@@ -23,9 +23,12 @@ import java.util.ArrayList;
 public class Command
 {
     private ArrayList<String> words = new ArrayList<String>();
-    // a constant array that holds all valid command words
-    private static final String[] validCommands = {
-      "open", "save", "look", "mono", "rot90", "help", "quit", "script"
+
+    private static final String[] editorCommands = {
+      "open", "save", "look", "help", "quit", "script"
+    };
+    private static final String[] imageCommands = {
+      "mono", "rot90"
     };
 
     /**
@@ -33,24 +36,36 @@ public class Command
      * either one (or both) can be null.
      * @param command An array of words in the command
      */
-    public Command(ArrayList<String> command)
-    {
-        this.words = command;
+    public Command(ArrayList<String> command) {
+      this.words = command;
     }
 
+    /**
+     * Get the class to which the command is referring to
+     * @return Either "Editor" or "Image", depending on
+     *         which class the command corresponds to
+     */
+    public String getCommandClass() {
+      for (String command : editorCommands) {
+        if (command.equals(this.words.get(0))) {
+          return "Editor";
+        }
+      }
+
+      for (String command : imageCommands) {
+        if (command.equals(this.words.get(0))) {
+          return "Image";
+        }
+      }
+      return null;
+    }
     /**
      * Validate the command
      *
      * @return whether or not this command is valid or not
      */
     public boolean isValid () {
-      for (String validCommand : validCommands) {
-        if (validCommand.equals(this.words.get(0))) {
-          return true;
-        }
-      }
-      // if we get here, the string was not found in the commands
-      return false;
+      return this.getCommandClass() != null;
     }
 
     /**
@@ -59,8 +74,7 @@ public class Command
      * @param index position of word in ArrayList
      * @return The command word.
      */
-    public String getWord(int index)
-    {
+    public String getWord(int index) {
       return this.words.get(index-1);
     }
 
@@ -68,9 +82,8 @@ public class Command
      * @param index position of word in ArrayList
      * @return true if this command was not understood.
      */
-    public boolean hasWord(int index)
-    {
-        return this.words.size() >= index;
+    public boolean hasWord(int index) {
+      return this.words.size() >= index;
     }
 
     /**
@@ -82,7 +95,11 @@ public class Command
     public static String getCommands() {
       String output = "";
 
-      for (String command : validCommands) {
+      for (String command : editorCommands) {
+        output += command + ' ';
+      }
+
+      for (String command : imageCommands) {
         output += command + ' ';
       }
 
