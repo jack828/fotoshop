@@ -1,5 +1,4 @@
 
-import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,6 +31,7 @@ public class Editor {
     private Parser parser;
     private Image currentImage;
     private String name;
+
     private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
     private static Editor editor;
@@ -55,7 +55,6 @@ public class Editor {
         "panic",
         "quitWhat"
     };
-    
 
     /**
      * Create the editor and initialise its parser.
@@ -65,7 +64,7 @@ public class Editor {
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
     }
-    
+
     public static Editor getInstence(){
         if(editor == null){
             Editor.editor = new Editor();
@@ -74,7 +73,7 @@ public class Editor {
     }
 
     /**
-     * Returns a HashMap containing the mapping of keywords to specific words 
+     * Returns a HashMap containing the mapping of keywords to specific words
      * of the specific language the I18N module is set to.
      * @param language E.g. "default" or "japanese" et cetera
      * @return HashMap<String, String> consisting of the key-pair mapping
@@ -87,7 +86,7 @@ public class Editor {
         for(String key : EDITORTEXTSKEY){
             languageHashMap.put(key, I18N.getString(key));
         }
-        
+
         return languageHashMap;
     }
     /**
@@ -132,19 +131,14 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-	//Says:
+        //Says:
         //"Welcome to Fotoshop!"
         //"Fotoshop is an amazing new, image editing tool."
         //"Type 'help' if you need help."
         //
-        //"The current image is " + name       
+        //"The current image is " + name
         System.out.printf(i18nWordsMapping.get("welcome"), name);
         System.out.println();
-        for(String filter : filters){
-            if (filter != null) {
-                System.out.print(filter + " ");
-            }
-        }
     }
 
     /**
@@ -154,48 +148,40 @@ public class Editor {
      * @return true If the command ends the editing session, false otherwise.
      */
     private boolean processCommand(Command command) {
-        boolean wantToQuit = false;
-        // If word inputted is not in list of Command words
-        if (!command.isValid()) {
-            //Says: "I don't know what you mean..."
-            System.out.println(i18nWordsMapping.get("iDontKnow"));
-            return false;
-        }
-
-        String commandWord = command.getWord(1);
-
-        // As "help" command is different than method name
-        // And help() has no parameters it is in its own if statement
-        if(commandWord.equals("help")){
-            printHelp();
-            return false;
-        }
-
-        //Here reflection is used to open the classes via the string inputted by user
-        try {
-            Class c = Class.forName("Editor");
-            Class[] cArgs = new Class[1];
-            cArgs[0] = Command.class;
-            Method method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            wantToQuit = (boolean)method.invoke(this, command);
-        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            System.out.println(e); //<--- DELETE
-            return false;
-        } catch (NoSuchMethodException e){
-            // Says: "I don't know what you mean..."
-            System.out.println(i18nWordsMapping.get("iDontKnow"));
-        }
-
+      Boolean wantToQuit = false;
       // If word inputted is not in list of Command words
       if (!command.isValid()) {
-        System.out.println("I don't know what you mean..");
+        System.out.println(i18nWordsMapping.get("iDontKnow"));
         return wantToQuit;
       }
 
-      commandWord = command.getWord(1);
+      String commandWord = command.getWord(1);
 
       String commandClass = command.getCommandClass();
 
+      try {
+          Class c = Class.forName(commandClass);
+          Class[] cArgs = { Command.class };
+          Method method;
+          Boolean result = false;
+
+          if (commandClass.equals("Editor")) {
+            method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
+            result = (Boolean) method.invoke(this, command);
+          } else {
+            method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+            method.invoke(this.currentImage);
+          }
+          // TODO remove
+          if (result == null) wantToQuit = false;
+          else wantToQuit = result;
+      } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+          System.out.println(e); //<--- DELETE
+          return wantToQuit;
+      } catch (NoSuchMethodException e) {
+          // TODO i18n
+          System.out.println("No such method: \"" + commandWord + "\"");
+      }
 
       // This is important for quit() and script()
       return wantToQuit;
@@ -209,13 +195,7 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-
-    private void printHelp() {
-        // Says:
-        //"You are using Fotoshop."
-        //
-        //"Your command words are:"
-        //"   open save look mono flipH rot90 help quit"
+    private void help(Command command) {
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
         System.out.println();
     }
@@ -236,7 +216,7 @@ public class Editor {
             System.out.println();
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.println();          
+            System.out.println();
         }
 
         return img;
@@ -261,7 +241,7 @@ public class Editor {
         ColorImage img = loadImage(inputName);
 
         if (img == null) {
-            printHelp();
+            help(command);
         } else {
             currentImage = new Image(img);
             // TODO: put image name in the Image class
@@ -281,7 +261,7 @@ public class Editor {
      */
     private boolean save(Command command) {
         if (currentImage == null) {
-            printHelp();
+            help(command);
             return false;
         }
 
@@ -295,13 +275,12 @@ public class Editor {
         String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
-            ImageIO.write((RenderedImage) currentImage, "jpg", outputFile);
-            // Says: "Image saved to " + outputName
+            ImageIO.write(currentImage.getImage(), "jpg", outputFile);
             System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
             System.out.println();
         } catch (IOException e) {
             System.out.println(e.getMessage());
-            printHelp();
+            help(command);
         }
 
         return false;
@@ -311,20 +290,16 @@ public class Editor {
      * "look" was entered. Report the status of the work bench.
      */
     private boolean look(Command command) {
-        //Says: "The current image is " + name
-        System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
-        System.out.println();
-        //Says: "Filters applied: "
-        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
-        System.out.println();
-        
         if (currentImage == null) {
+          // TODO i18n
           System.out.println("No image loaded");
           return false;
         }
-        System.out.println("The current image is " + name);
-        System.out.print("Filters applied: ");
 
+        System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
+        System.out.println();
+        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
+        System.out.println();
 
         for(String filter: currentImage.getFilters()){
             if (filter != null) {
