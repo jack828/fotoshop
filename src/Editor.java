@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * This class is the main processing class of the Fotoshop application.
@@ -156,6 +157,7 @@ public class Editor {
             result = (Boolean) method.invoke(this, command);
           } else {
             method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+            this.currentImage.addChange(this.currentImage);
             method.invoke(this.currentImage);
           }
           // TODO remove
@@ -349,5 +351,24 @@ public class Editor {
         } else {
             return true;  // signal that we want to quit
         }
+    }
+
+    private boolean undo(Command command) {
+      if (command.hasWord(2)) {
+        System.out.println("'redo' method accepts 0 parameters.");
+        return false;
+      }
+
+      Stack<Image> changes = this.currentImage.getChanges();
+
+      if (!changes.empty()) {
+          this.currentImage = changes.pop();
+          System.out.println("Image reverted to previous state.");
+
+          return false;
+        }
+
+      System.out.println("There is nothing to undo!");
+      return false;
     }
 }
