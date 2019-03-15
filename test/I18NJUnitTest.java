@@ -44,8 +44,10 @@ public class I18NJUnitTest
         Class clazz = I18N.class;
         Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields){
-            field.setAccessible(true);
-            field.set(null, null);
+            if(!field.getName().equals("LANGUAGESETS")){
+                field.setAccessible(true);
+                field.set(null, null);
+            }
         }
     }
     
@@ -58,20 +60,21 @@ public class I18NJUnitTest
         Class clazz = I18N.class;
         Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields){
-            field.setAccessible(true);
-            Assert.assertEquals(null, field.get(null));
+            if(!field.getName().equals("LANGUAGESETS")){
+                field.setAccessible(true);
+                Assert.assertEquals(null, field.get(null));
+            }
         }
     }
     
     /**
      * This Test checks to see if setLanguage Method initializes the I18N module 
-     * properly via the I18N Init() method when it is first invoked
      * "default" is passed to the setLanguage method as a argument
      * Test should check to ensure all the I18N static variables are properly initialized
      * @throws java.lang.IllegalAccessException
      */
     @Test
-    public void testSetLanguageMethodInitFlow() throws IllegalAccessException
+    public void testSetLanguageMethodFlow() throws IllegalAccessException
     {     
         I18N.setLanguage("default");
         
@@ -135,20 +138,9 @@ public class I18NJUnitTest
         I18N.setLanguage("default");
         Assert.assertEquals("Hello World!", I18N.getString("testString1"));
         I18N.setLanguage("japanese");
-        Assert.assertEquals("Ohayo Sekai!", I18N.getString("testString1"));
+        Assert.assertEquals("おはよ世界!", I18N.getString("testString1"));
     }
-    
-    /**
-     * Tests the initialization work-flow of the I18N getString method
-     * This tests the initial scenario where the static variable 'message' of the I18N module is null
-     * Its value is subsequently initialized by the setLanguage() method invoked by the getString method
-     */
-    @Test
-    public void testGetStringMethodInitFlow()
-    {        
-        Assert.assertEquals("Hello World!", I18N.getString("testString1"));
-    }
-    
+     
     /**
      * Checks to ensure that if ResourceBundle does not contain a particular key-pair value
      * A value of null is to be returned;
@@ -159,9 +151,7 @@ public class I18NJUnitTest
     }
     
     /**
-     * Perform 2 tests;
-     * 1) Returns null if I18N module has yet to be initialized via either the getLanguage or getString method.
-     * 2) Ensure Correct Locale is returned if I18N module is properly initialized via either the getLanguage or getString method
+     * Checks to ensure Correct Locale is returned if I18N module is properly initialized
      * @throws java.lang.IllegalAccessException
      */
     @Test

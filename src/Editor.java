@@ -7,7 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-
+import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  * This class is the main processing class of the Fotoshop application.
@@ -31,13 +32,55 @@ public class Editor {
     private Image currentImage;
     private String name;
 
+    private ArrayList<String> filters = new ArrayList<>();
+    private Scanner reader;
+
+    private HashMap<String, String> i18nWordsMapping;
+    private static String[] EDITORTEXTSKEY = {
+        "welcome",
+        "goodbye",
+        "iDontKnow",
+        "youAreUsingFotoshop",
+        "cannotFindImageFile",
+        "cwdIs",
+        "openWhat",
+        "loaded",
+        "saveWhere",
+        "imageSavedTo",
+        "currentImageIs",
+        "filtersApplied",
+        "whichScript",
+        "cannotFind",
+        "panic",
+        "quitWhat"
+    };
+
     /**
      * Create the editor and initialise its parser.
      */
     public Editor() {
         parser = new Parser();
+        reader = new Scanner(System.in);
+        i18nWordsMapping = returnLanguageHashMap("default");
     }
 
+    /**
+     * Returns a HashMap containing the mapping of keywords to specific words
+     * of the specific language the I18N module is set to.
+     * @param language E.g. "default" or "japanese" et cetera
+     * @return HashMap<String, String> consisting of the key-pair mapping
+     * of specific key values to language specific words
+     */
+    public HashMap<String, String> returnLanguageHashMap(String language){
+        HashMap<String, String> languageHashMap = new HashMap();
+        I18N.setLanguage(language);
+
+        for(String key : EDITORTEXTSKEY){
+            languageHashMap.put(key, I18N.getString(key));
+        }
+
+        return languageHashMap;
+    }
     /**
      * Main edit routine. Loops until the end of the editing session.
      */
@@ -49,19 +92,39 @@ public class Editor {
       // TODO: move to class variable?
         boolean finished = false;
         while (!finished) {
-            Command command = parser.getCommand();
+            Command command = getCommand();
             finished = processCommand(command);
         }
-        System.out.println("Thank you for using Fotoshop.  Good bye.");
+        // Says: "Thank you for using Fotoshop.  Good bye."
+        System.out.println(i18nWordsMapping.get("goodbye"));
     }
+    /**
+     * @return The next command from the user.
+     */
+    public Command getCommand()
+    {
+        String inputLine;   // will hold the full input line
+        ArrayList<String> words = new ArrayList<>();
 
+        System.out.print("> ");     // print prompt
+
+        inputLine = reader.nextLine();
+
+        // Find up to two words on the line.
+        Scanner tokenizer = new Scanner(inputLine);
+
+        while(tokenizer.hasNext()){
+            words.add(tokenizer.next());
+        }
+
+        return new Command(words);
+    }
     /**
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-      // TODO: print current working directory
-        System.out.println("Welcome to Fotoshop!\nFotoshop is an amazing new image editing tool.\n" +
-          "Type 'help' if you need help.\n\nThe current image is: " + name + "\nFilters applied: none");
+        System.out.printf(i18nWordsMapping.get("welcome"), name);
+        System.out.println();
     }
 
     /**
@@ -74,7 +137,7 @@ public class Editor {
       Boolean wantToQuit = false;
       // If word inputted is not in list of Command words
       if (!command.isValid()) {
-        System.out.println("I don't know what you mean..");
+        System.out.println(i18nWordsMapping.get("iDontKnow"));
         return wantToQuit;
       }
 
@@ -102,6 +165,7 @@ public class Editor {
           System.out.println(e); //<--- DELETE
           return wantToQuit;
       } catch (NoSuchMethodException e) {
+          // TODO i18n
           System.out.println("No such method: \"" + commandWord + "\"");
       }
 
@@ -118,7 +182,7 @@ public class Editor {
      * message and a list of the command words.
      */
     private void help(Command command) {
-      System.out.println("You are using Fotoshop.\n" + "Your command words are:\n" + Command.getCommands());
+        System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
     }
 
     /**
@@ -132,8 +196,12 @@ public class Editor {
         try {
             img = new ColorImage(ImageIO.read(new File(name)));
         } catch (IOException e) {
-            System.out.println("Cannot find image file, " + name);
-            System.out.println("cwd is " + System.getProperty("user.dir"));
+            // Says: "Cannot find image file, "
+            System.out.printf(i18nWordsMapping.get("cannotFindImageFile"), name);
+            System.out.print("\n");
+            // Says: "cwd is " + System.getProperty("user.dir")
+            System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
+            System.out.print("aaa\n");
         }
 
         return img;
@@ -149,7 +217,8 @@ public class Editor {
         int fileName = 2;
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
-            System.out.println("open what?");
+            // Says: "open what?"
+            System.out.println(i18nWordsMapping.get("openWhat"));
             return false;
         }
 
@@ -162,7 +231,8 @@ public class Editor {
             currentImage = new Image(img);
             // TODO: put image name in the Image class
             name = inputName;
-            System.out.println("Loaded " + name);
+            // Says: "Loaded "
+            System.out.printf(i18nWordsMapping.get("loaded"), name);
         }
 
         return false;
@@ -181,7 +251,8 @@ public class Editor {
 
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
-            System.out.println("save where?");
+            // Says: "save where?"
+            System.out.println(i18nWordsMapping.get("saveWhere"));
             return false;
         }
 
@@ -189,7 +260,7 @@ public class Editor {
         try {
             File outputFile = new File(outputName);
             ImageIO.write(currentImage.getImage(), "jpg", outputFile);
-            System.out.println("Image saved to " + outputName);
+            System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
         } catch (IOException e) {
             System.out.println(e.getMessage());
             help(command);
@@ -203,11 +274,12 @@ public class Editor {
      */
     private boolean look(Command command) {
         if (currentImage == null) {
+          // TODO i18n
           System.out.println("No image loaded");
           return false;
         }
-        System.out.println("The current image is " + name);
-        System.out.print("Filters applied: ");
+        System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
+        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
 
         for(String filter: currentImage.getFilters()){
             if (filter != null) {
@@ -232,7 +304,8 @@ public class Editor {
     private boolean script(Command command) {
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
-            System.out.println("which script");
+            // Says: "which script"
+            System.out.println(i18nWordsMapping.get("whichScript"));
             return false;
         }
 
@@ -253,11 +326,13 @@ public class Editor {
             return finished;
         }
         catch (FileNotFoundException ex) {
-            System.out.println("Cannot find " + scriptName);
+            // Says: "Cannot find " + scriptName
+            System.out.printf(i18nWordsMapping.get("cannotFind"), scriptName);
             return false;
         }
         catch (IOException ex) {
-            throw new RuntimeException("Panic: script barfed!");
+            // Says: "Panic: script barfed!"
+            throw new RuntimeException(i18nWordsMapping.get("panic"));
         }
     }
 
@@ -269,7 +344,7 @@ public class Editor {
      */
     private boolean quit(Command command) {
         if (command.hasWord(2)) {
-            System.out.println("Quit what?");
+            System.out.println(i18nWordsMapping.get("quitWhat"));
             return false;
         } else {
             return true;  // signal that we want to quit
