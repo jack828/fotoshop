@@ -29,7 +29,7 @@ import java.util.Scanner;
 
 public class Editor {
 
-    private Parser parser;
+    //private Parser parser;
     private ColorImage currentImage;
     private String name;
     private ArrayList<String> filters = new ArrayList<>();
@@ -63,7 +63,9 @@ public class Editor {
         reader = new Scanner(System.in);
         i18nWordsMapping = returnLanguageHashMap("default");
     }
-
+    public void setInputStream(FileInputStream str) { 
+        reader = new Scanner(str);
+    }
     /**
      * Returns a HashMap containing the mapping of keywords to specific words 
      * of the specific language the I18N module is set to.
@@ -380,14 +382,13 @@ public class Editor {
         }
 
         String scriptName = command.getWord(2);
-        Parser scriptParser = new Parser();
 
         try (FileInputStream inputStream = new FileInputStream(scriptName)) {
-            scriptParser.setInputStream(inputStream);
+            setInputStream(inputStream);
             boolean finished = false;
             while (!finished) {
                 try {
-                    Command cmd = scriptParser.getCommand();
+                    Command cmd = getCommand();
                     finished = processCommand(cmd);
                 } catch (Exception ex) {
                     return finished;
