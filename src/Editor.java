@@ -59,7 +59,7 @@ public class Editor {
      * Create the editor and initialise its parser.
      */
     public Editor() {
-        parser = new Parser();
+        //parser = new Parser();
         reader = new Scanner(System.in);
         i18nWordsMapping = returnLanguageHashMap("default");
     }
@@ -129,6 +129,7 @@ public class Editor {
         //
         //"The current image is " + name       
         System.out.printf(i18nWordsMapping.get("welcome"), name);
+        System.out.println("");
 
         for(String filter : filters){
             if (filter != null) {
@@ -196,6 +197,7 @@ public class Editor {
         //"Your command words are:"
         //"   open save look mono flipH rot90 help quit"
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+        System.out.println("");
     }
 
     /**
@@ -211,10 +213,10 @@ public class Editor {
         } catch (IOException e) {
             // Says: "Cannot find image file, "
             System.out.printf(i18nWordsMapping.get("cannotFindImageFile"), name);
-            System.out.print("\n");
+            System.out.println("");
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.print("aaa\n");            
+            System.out.println("");            
         }
 
         return img;
@@ -245,6 +247,7 @@ public class Editor {
             name = inputName;
             // Says: "Loaded "
             System.out.printf(i18nWordsMapping.get("loaded"), name);
+            System.out.println("");
         }
 
         return false;
@@ -274,6 +277,7 @@ public class Editor {
             ImageIO.write(currentImage, "jpg", outputFile);
             // Says: "Image saved to " + outputName
             System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
+            System.out.println("");
         } catch (IOException e) {
             System.out.println(e.getMessage());
             printHelp();
@@ -289,8 +293,9 @@ public class Editor {
     private boolean look(Command command) {
         //Says: "The current image is " + name
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
+        System.out.println("");
         //Says: "Filters applied: "
-        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
+        System.out.println(i18nWordsMapping.get("filtersApplied") + " ");
 
         for(String filter: filters){
             if (filter != null) {
@@ -393,6 +398,7 @@ public class Editor {
         catch (FileNotFoundException ex) {
             // Says: "Cannot find " + scriptName
             System.out.printf(i18nWordsMapping.get("cannotFind"), scriptName);
+            System.out.println("");
             return false;
         }
         catch (IOException ex) {
