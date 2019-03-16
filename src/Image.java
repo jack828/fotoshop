@@ -14,10 +14,12 @@ public class Image {
 
   private ColorImage image;
   private ArrayList<String> filters;
+  private Stack<ColorImage> changes;
 
   public Image(ColorImage image) {
     this.image = image;
     this.filters = new ArrayList<>();
+    this.changes = new Stack();
   }
 
   /**
@@ -38,6 +40,10 @@ public class Image {
   }
 
   public void setImage(ColorImage image) {this.image = image;}
+
+  public Stack<ColorImage> getChanges() {return this.changes;}
+
+  public void addChanges(ColorImage snapshot) {this.changes.push(snapshot);}
 
   /**
    * Convert the current image to monochrome,

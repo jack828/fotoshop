@@ -36,7 +36,6 @@ public class Editor {
     private Image currentImage;
     private String name;
 
-    private Stack<ColorImage> changes;
     private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
 
@@ -64,7 +63,6 @@ public class Editor {
      * Create the editor and initialise its parser.
      */
     public Editor() {
-        changes = new Stack();
         parser = new Parser();
         reader = new Scanner(System.in);
         i18nWordsMapping = returnLanguageHashMap("default");
@@ -163,7 +161,7 @@ public class Editor {
           } else {
             method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
             ColorImage clone = this.currentImage.getImage();
-            this.changes.push(clone);
+            this.currentImage.addChanges(clone);
             method.invoke(this.currentImage);
           }
           // TODO remove
@@ -365,8 +363,8 @@ public class Editor {
         return false;
       }
 
-      if (!this.changes.empty()) {
-          this.currentImage.setImage(changes.pop());
+      if (!this.currentImage.getChanges().isEmpty()){
+          this.currentImage.setImage(this.currentImage.getChanges().pop());
           System.out.println("Image reverted to previous state.");
 
           return false;
