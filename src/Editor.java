@@ -1,4 +1,7 @@
 
+import com.sun.prism.shader.AlphaOne_Color_Loader;
+
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -33,6 +36,7 @@ public class Editor {
     private Image currentImage;
     private String name;
 
+    private Stack<ColorImage> changes;
     private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
 
@@ -60,6 +64,7 @@ public class Editor {
      * Create the editor and initialise its parser.
      */
     public Editor() {
+        changes = new Stack();
         parser = new Parser();
         reader = new Scanner(System.in);
         i18nWordsMapping = returnLanguageHashMap("default");
@@ -157,7 +162,8 @@ public class Editor {
             result = (Boolean) method.invoke(this, command);
           } else {
             method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
-            this.currentImage.addChange(this.currentImage);
+            ColorImage clone = this.currentImage.getImage();
+            this.changes.push(clone);
             method.invoke(this.currentImage);
           }
           // TODO remove
@@ -359,10 +365,8 @@ public class Editor {
         return false;
       }
 
-      Stack<Image> changes = this.currentImage.getChanges();
-
-      if (!changes.empty()) {
-          this.currentImage = changes.pop();
+      if (!this.changes.empty()) {
+          this.currentImage.setImage(changes.pop());
           System.out.println("Image reverted to previous state.");
 
           return false;

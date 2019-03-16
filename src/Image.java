@@ -14,10 +14,8 @@ public class Image {
 
   private ColorImage image;
   private ArrayList<String> filters;
-  private Stack<Image> changes;
 
   public Image(ColorImage image) {
-    this.changes = new Stack<>();
     this.image = image;
     this.filters = new ArrayList<>();
   }
@@ -39,9 +37,7 @@ public class Image {
     return filters;
   }
 
-  public Stack<Image> getChanges() {return this.changes;}
-
-  public void addChange(Image snapshot) { this.changes.push(snapshot); }
+  public void setImage(ColorImage image) {this.image = image;}
 
   /**
    * Convert the current image to monochrome,
