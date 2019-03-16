@@ -357,6 +357,11 @@ public class Editor {
         }
     }
 
+  /**
+   * "undo" was entered. Reverts the current image to its most recent state
+   * @param command the command given
+   * @return true, if this command quits the editor, false otherwise.
+   */
     private boolean undo(Command command) {
       if (command.hasWord(2)) {
         System.out.println("'redo' method accepts 0 parameters.");

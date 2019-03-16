@@ -39,10 +39,22 @@ public class Image {
     return filters;
   }
 
+  /**
+   * Setter to allow a ColorImage to be saved as an Image
+   * @param image The ColorImage to be saved
+   */
   public void setImage(ColorImage image) {this.image = image;}
 
+  /**
+   * Retrieves a list of changes made to the Image.
+   * @return a Stack of Changes made
+   */
   public Stack<ColorImage> getChanges() {return this.changes;}
 
+  /**
+   * Adds a new change to the list of Image changes
+   * @param snapshot the image snapshot to be added to the list
+   */
   public void addChanges(ColorImage snapshot) {this.changes.push(snapshot);}
 
   /**
