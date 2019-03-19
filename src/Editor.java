@@ -52,7 +52,8 @@ public class Editor {
         "whichScript",
         "cannotFind",
         "panic",
-        "quitWhat"
+        "quitWhat",
+        "noImage"
     };
 
     /**
@@ -155,12 +156,21 @@ public class Editor {
             method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
             result = (Boolean) method.invoke(this, command);
           } else {
-            method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
-            method.invoke(this.currentImage);
+              if(this.currentImage!=null){
+                method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+                method.invoke(this.currentImage);
+              }
+              else{
+                  System.out.printf(i18nWordsMapping.get("noImage"));
+              }
           }
+          
           // TODO remove
-          if (result == null) wantToQuit = false;
-          else wantToQuit = result;
+          if (result == null) 
+              wantToQuit = false;
+          else 
+              wantToQuit = result;
+          
       } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
           System.out.println(e); //<--- DELETE
           return wantToQuit;

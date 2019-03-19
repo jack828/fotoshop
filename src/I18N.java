@@ -28,8 +28,9 @@ public class I18N {
         /* Language settings should be inserted below for initiaization purposes
            Ideally all of this values below should be moved to a properties file as well to facilitate testing */
       sets.put("default", new String[]{ "en", "US", "default" });
-      sets.put("japanese", new String[]{ "jp", "JP", "testProperties" });
+      sets.put("japanese", new String[]{ "jp", "JP", "japaneseProperties" });
       sets.put("nonexistent", new String[]{ "en", "US", "nonexistent" });
+      sets.put("arabic", new String[]{"ar", "DZ", "arabicProperties"});
       
       return sets;
     }
