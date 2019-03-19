@@ -53,7 +53,8 @@ public class Editor {
         "cannotFind",
         "panic",
         "quitWhat",
-        "noImage"
+        "noImageLoaded",
+        "noSuchMethod"
     };
 
     /**
@@ -161,7 +162,7 @@ public class Editor {
                 method.invoke(this.currentImage);
               }
               else{
-                  System.out.printf(i18nWordsMapping.get("noImage"));
+                  System.out.printf(i18nWordsMapping.get("noImageLoaded"));
               }
           }
           
@@ -175,8 +176,7 @@ public class Editor {
           System.out.println(e); //<--- DELETE
           return wantToQuit;
       } catch (NoSuchMethodException e) {
-          // TODO i18n
-          System.out.println("No such method: \"" + commandWord + "\"");
+          System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
       }
 
       // This is important for quit() and script()
@@ -284,8 +284,7 @@ public class Editor {
      */
     private boolean look(Command command) {
         if (currentImage == null) {
-          // TODO i18n
-          System.out.println("No image loaded");
+          System.out.println(i18nWordsMapping.get("noImageLoaded"));
           return false;
         }
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
