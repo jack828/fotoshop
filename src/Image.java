@@ -108,22 +108,23 @@ public class Image {
       }
     }
     this.image = rotImage;
-
+    System.out.println("rot90<---");
     filters.add("rot90");
   }
+   /**
+   * Flips image Horizontally
+   * and update the internal image reference.
+   *
+   */
    public void flipH() {
-
-    // R90 = [0 -1, 1 0] rotates around origin
-    // (x,y) -> (-y,x)
-    // then transate -> (height-y, x)
     int height = this.image.getHeight();
     int width = this.image.getWidth();
-    ColorImage rotImage = new ColorImage(height, width);
+    ColorImage rotImage = new ColorImage(width, height);
 
-    for (int y = 0; y < height; y++) { // in the rotated image
+    for (int y = 0; y < height; y++) { // in the flipped image
       for (int x = 0; x < width; x++) {
         Color pixel = this.image.getPixel(x, y);
-        rotImage.setPixel(y, width - x, pixel);
+        rotImage.setPixel(width - x -1, y, pixel);
       }
     }
     this.image = rotImage;
