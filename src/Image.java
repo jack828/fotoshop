@@ -111,7 +111,7 @@ public class Image {
 
     filters.add("rot90");
   }
- public void flipH() {
+   public void flipH() {
 
     // R90 = [0 -1, 1 0] rotates around origin
     // (x,y) -> (-y,x)

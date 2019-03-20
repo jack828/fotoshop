@@ -182,7 +182,6 @@ public class Editor {
           return wantToQuit;
       } catch (NoSuchMethodException e) {
           System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
-          System.out.print("aaaaaa");
       }
 
       // This is important for quit() and script()
@@ -217,7 +216,6 @@ public class Editor {
             System.out.print("\n");
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.print("aaa\n");
         }
 
         return img;
