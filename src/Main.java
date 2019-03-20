@@ -5,7 +5,7 @@
  * @version 2018.12.12
  */
 public class Main {
-   public static void main(String[] args) {
+   public static void main(String[] args) throws ClassNotFoundException {
         Editor.getInstence().edit();
     }
 }

@@ -39,7 +39,6 @@ public class Command
     public Command(ArrayList<String> command) {
       this.words = command;
     }
-
     /**
      * Get the class to which the command is referring to
      * @return Either "Editor" or "Image", depending on
