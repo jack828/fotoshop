@@ -25,7 +25,7 @@ public class Command
     private ArrayList<String> words = new ArrayList<String>();
 
     private static final String[] editorCommands = {
-      "open", "save", "look", "help", "quit", "script"
+      "open", "save", "look", "help", "quit", "script", "undo"
     };
     private static final String[] imageCommands = {
       "mono", "rot90"

@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Stack;
 
 /**
  * This class contains a reference to the current image, and allows
@@ -13,10 +14,12 @@ public class Image {
 
   private ColorImage image;
   private ArrayList<String> filters;
+  private Stack<ColorImage> changes;
 
   public Image(ColorImage image) {
     this.image = image;
     this.filters = new ArrayList<>();
+    this.changes = new Stack();
   }
 
   /**
@@ -35,6 +38,24 @@ public class Image {
   public ArrayList<String> getFilters() {
     return filters;
   }
+
+  /**
+   * Setter to allow a ColorImage to be saved as an Image
+   * @param image The ColorImage to be saved
+   */
+  public void setImage(ColorImage image) {this.image = image;}
+
+  /**
+   * Retrieves a list of changes made to the Image.
+   * @return a Stack of Changes made
+   */
+  public Stack<ColorImage> getChanges() {return this.changes;}
+
+  /**
+   * Adds a new change to the list of Image changes
+   * @param snapshot the image snapshot to be added to the list
+   */
+  public void addChanges(ColorImage snapshot) {this.changes.push(snapshot);}
 
   /**
    * Convert the current image to monochrome,

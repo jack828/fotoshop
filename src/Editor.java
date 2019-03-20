@@ -1,4 +1,7 @@
 
+import com.sun.prism.shader.AlphaOne_Color_Loader;
+
+import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,6 +12,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Stack;
 
 /**
  * This class is the main processing class of the Fotoshop application.
@@ -159,6 +163,8 @@ public class Editor {
           } else {
               if(this.currentImage!=null){
                 method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+                ColorImage clone = this.currentImage.getImage();
+                this.currentImage.addChanges(clone)
                 method.invoke(this.currentImage);
               }
               else{
@@ -358,5 +364,27 @@ public class Editor {
         } else {
             return true;  // signal that we want to quit
         }
+    }
+
+  /**
+   * "undo" was entered. Reverts the current image to its most recent state
+   * @param command the command given
+   * @return true, if this command quits the editor, false otherwise.
+   */
+    private boolean undo(Command command) {
+      if (command.hasWord(2)) {
+        System.out.println("'redo' method accepts 0 parameters.");
+        return false;
+      }
+
+      if (!this.currentImage.getChanges().isEmpty()){
+          this.currentImage.setImage(this.currentImage.getChanges().pop());
+          System.out.println("Image reverted to previous state.");
+
+          return false;
+        }
+
+      System.out.println("There is nothing to undo!");
+      return false;
     }
 }
