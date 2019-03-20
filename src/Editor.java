@@ -112,7 +112,7 @@ public class Editor {
      */
     public Boolean callMethod(Object o, Command command) {
         // This word should be the name of the method being called
-        String commandWord = command.getWord(1).trim().toLowerCase();
+        String commandWord = command.getWord(1).trim();
         Boolean result = false;
         
         try {
@@ -181,6 +181,7 @@ public class Editor {
      * @return true If the command ends the editing session, false otherwise.
      */
     private boolean processCommand(Command command) {
+
         Boolean wantToQuit = false;
         // If word inputted is not in list of Command words
         if (!command.isValid()) {
@@ -192,6 +193,7 @@ public class Editor {
             wantToQuit = callMethod(this,command);
         }else if((command.getCommandClass()).equals("Image")){
             if(this.currentImage != null){
+                //System.out.println("aaaa");
                 this.currentImage.addChanges( this.currentImage.getImage() );
                 wantToQuit = callMethod(this.currentImage,command);
             }else{
@@ -231,6 +233,7 @@ public class Editor {
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
             System.out.println();
+
         }
 
         return img;
