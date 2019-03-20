@@ -1,5 +1,4 @@
 
-import com.sun.prism.shader.AlphaOne_Color_Loader;
 
 import java.awt.*;
 import java.io.File;
@@ -164,7 +163,7 @@ public class Editor {
               if(this.currentImage!=null){
                 method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
                 ColorImage clone = this.currentImage.getImage();
-                this.currentImage.addChanges(clone)
+                this.currentImage.addChanges(clone);
                 method.invoke(this.currentImage);
               }
               else{
