@@ -128,6 +128,6 @@ public class Image {
     }
     this.image = rotImage;
 
-    filters.add("rot90");
+    filters.add("flipH");
   }
 }
