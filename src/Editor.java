@@ -182,6 +182,7 @@ public class Editor {
           return wantToQuit;
       } catch (NoSuchMethodException e) {
           System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
+          System.out.print("aaaaaa");
       }
 
       // This is important for quit() and script()

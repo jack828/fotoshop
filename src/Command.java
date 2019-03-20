@@ -28,7 +28,7 @@ public class Command
       "open", "save", "look", "help", "quit", "script", "undo"
     };
     private static final String[] imageCommands = {
-      "mono", "rot90"
+      "mono","flipH", "rot90"
     };
 
     /**
