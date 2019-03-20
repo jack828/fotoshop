@@ -56,7 +56,9 @@ public class Editor {
         "whichScript",
         "cannotFind",
         "panic",
-        "quitWhat"
+        "quitWhat",
+        "noImageLoaded",
+        "noSuchMethod"
     };
 
     /**
@@ -159,20 +161,28 @@ public class Editor {
             method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
             result = (Boolean) method.invoke(this, command);
           } else {
-            method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
-            ColorImage clone = this.currentImage.getImage();
-            this.currentImage.addChanges(clone);
-            method.invoke(this.currentImage);
+              if(this.currentImage!=null){
+                method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
+                ColorImage clone = this.currentImage.getImage();
+                this.currentImage.addChanges(clone)
+                method.invoke(this.currentImage);
+              }
+              else{
+                  System.out.printf(i18nWordsMapping.get("noImageLoaded"));
+              }
           }
+          
           // TODO remove
-          if (result == null) wantToQuit = false;
-          else wantToQuit = result;
+          if (result == null) 
+              wantToQuit = false;
+          else 
+              wantToQuit = result;
+          
       } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
           System.out.println(e); //<--- DELETE
           return wantToQuit;
       } catch (NoSuchMethodException e) {
-          // TODO i18n
-          System.out.println("No such method: \"" + commandWord + "\"");
+          System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
       }
 
       // This is important for quit() and script()
@@ -280,8 +290,7 @@ public class Editor {
      */
     private boolean look(Command command) {
         if (currentImage == null) {
-          // TODO i18n
-          System.out.println("No image loaded");
+          System.out.println(i18nWordsMapping.get("noImageLoaded"));
           return false;
         }
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
