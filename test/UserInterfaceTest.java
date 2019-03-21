@@ -16,115 +16,22 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * The test class WelcomeTest.
+ * The test class TestNew.
  *
  * @author  (your name)
  * @version (a version number or a date)
  */
 public class UserInterfaceTest
 {
+    InputStream oringinalIn = System.in;
+    PrintStream old = System.out;
     private ByteArrayOutputStream baos = new ByteArrayOutputStream();
     private PrintStream ps = new PrintStream(baos);
-    PrintStream old = System.out;
-    InputStream oringinalIn = System.in;
-    
-    /**
-     * Default constructor for test class WelcomeTest
-     */
+
     public UserInterfaceTest()
     {
     }
-    
-    public boolean printCapture(String input, String output){
-        String[] args = null;
 
-        
-        input = input + System.lineSeparator() + "quit";
-        // Input String
-        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        // Quit Program
-        ///in = new ByteArrayInputStream("quit".getBytes());
-        ///System.setIn(in);
-        Main.main(args);
-       
-        
-        
-        String result = baos.toString();
-        //System.out.println(result);
-        return result.contains(output);
-    }
-    public boolean printCapture(String input, String[] outputs){
-        String[] args = null;
-
-        
-        input = input + System.lineSeparator() + "quit";
-        // Input String
-        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        // Quit Program
-        ///in = new ByteArrayInputStream("quit".getBytes());
-        ///System.setIn(in);
-        Main.main(args);
-        String result = baos.toString();
-        
-        boolean out = true;
-        
-        for(String output: outputs){
-            if(out){
-                out = result.contains(output);
-            }
-        }
-        
-        return out;
-    }
-    public String printCapture(String input){
-        String[] args = null;
-
-        input = input + System.lineSeparator() + "quit";
-        // Input String
-        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Main.main(args);
-       
-        
-        
-        String result = baos.toString();
-        return result;
-    }
-    public String printCapture(String[] inputs){
-        String[] args = null;
-
-        String input = "";
-        
-        for(String cmd: inputs){
-            input += cmd + System.lineSeparator();
-        }
-        input += "quit";
-        
-        
-        // Input String
-        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Main.main(args);
-        
-        
-        
-        String result = baos.toString();
-        return result;
-    }
-    public boolean printCapture(String[] inputs, String[] outputs){
-        String result = printCapture(inputs);
-        boolean out = true;
-        
-        for(String output: outputs){
-            if(out){
-                out = result.contains(output);
-            }
-        }
-        
-        return out;
-    }
     /**
      * Sets up the test fixture.
      *
@@ -133,8 +40,7 @@ public class UserInterfaceTest
     @Before
     public void setUp()
     {
-        System.setOut(ps);
-        InputStream oringinalIn = System.in;
+        System.setOut(this.ps);
     }
 
     /**
@@ -149,42 +55,34 @@ public class UserInterfaceTest
         System.out.flush();
         System.setOut(old);
     }
-    
-    @Test
-    public void welcomeMessageTest(){
-        String input = "quit";     
-        String[] output = {"Welcome to Fotoshop!",
-                           "Fotoshop is an amazing new, image editing tool.",
-                           "Type 'help' if you need help.",
-                           "The current image is:",
-                           "Filters applied:"
-                           }; 
-        assertTrue(printCapture(input,output));
-    }
-    
-    @Test
-    public void helpMessageTest(){
-        String input = "help";
-        String[] output = {"You are using Fotoshop.","Your command words are:",
-            "open","save", "look", "mono", "flipH", "rot90", "help", "quit"};
-        assertTrue(printCapture(input,output));
+    public boolean printCapture(String input, String output)
+    {
+        String[] args = null;
+        input += System.lineSeparator() + "quit";
+        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+        Main.main(args);
+        System.setIn(oringinalIn);
+        
+        System.out.flush();
+        System.setOut(old);
+        
+        //System.out.println("-->"+baos+"<--");
+        String result = baos.toString();
+        return result.contains(output);
     }
     @Test
-    public void unknownTest(){
-        String output = "I don't know what you mean...";
-        String input = "qqqqq";
-        assertTrue(printCapture(input,output));
-    }
-    @Test
-    public void openTest(){
-        String output = "open what?";
+    public void quitTest()
+    {
         String input = "open";
-        assertTrue(printCapture(input,output));
+        String output = "open what?";
+        assertTrue(printCapture(input, output));
     }
     @Test
-    public void openNotFoundTest(){
-        String output = "Cannot find image file, aaa";
-        String input = "open aaa";
-        assertTrue(printCapture(input,output));
+    public void saveTest()
+    {
+        String input = "help";
+        String output = "Your command words are";
+        assertTrue(printCapture(input, output));
     }
 }

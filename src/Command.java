@@ -44,7 +44,9 @@ public class Command
      * @return Either "Editor" or "Image", depending on
      *         which class the command corresponds to
      */
-    public String getCommandClass() {
+    public String getCommandClass() {  
+      if(this.words.size() == 0)
+          return null;
       for (String command : editorCommands) {
         if (command.equals(this.words.get(0))) {
           return "Editor";

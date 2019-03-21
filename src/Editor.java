@@ -159,13 +159,16 @@ public class Editor {
      */
     public Command getCommand()
     {
-        String inputLine;   // will hold the full input line
+        String inputLine = "";   // will hold the full input line
         ArrayList<String> words = new ArrayList<>();
 
         System.out.print("> ");     // print prompt
 
-        inputLine = reader.nextLine();
-
+        if(reader.hasNextLine()){
+            inputLine = reader.nextLine();
+        }else{
+            inputLine = "help";
+        }
         // Find up to two words on the line.
         Scanner tokenizer = new Scanner(inputLine);
 
