@@ -67,7 +67,7 @@ public class Editor {
         this.finished = false;
     }
 
-    public static Editor getInstence(){
+    public static Editor getInstance(){
         if(editor == null){
             Editor.editor = new Editor();
         }
