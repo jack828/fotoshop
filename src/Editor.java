@@ -95,13 +95,13 @@ public class Editor {
      * Main edit routine. Loops until the end of the editing session.
      */
     public void edit() {
-        printWelcome();
+        System.out.println(printWelcome());
 
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
         while (!this.finished) {
             Command command = this.parser.getCommand(false);
-            processCommand(command);
+            System.out.println(processCommand(command));
         }
         // Says: "Thank you for using Fotoshop.  Good bye."
         System.out.println(i18nWordsMapping.get("goodbye"));
@@ -112,7 +112,7 @@ public class Editor {
      * @param o The Object the methods will be called from
      * @param command The command that will be passed to the method
      */
-    public void callMethod(Object o, Command command) {
+    public Object callMethod(Object o, Command command) {
         // This word should be the name of the method being called
         String commandWord = command.getWord(1).trim();
 
@@ -132,7 +132,7 @@ public class Editor {
                 // The method is created by passing the methods name with the data type of its parameter
                 method = c.getDeclaredMethod(commandWord, cArgs);
                 // Command is passed to method
-                method.invoke(o, command);
+                return method.invoke(o, command);
             }else{
                 // This part is for methods that do not have arguments
                 method = c.getDeclaredMethod(commandWord);
@@ -144,20 +144,20 @@ public class Editor {
         } catch (NoSuchMethodException e) {
             System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
         }
+        return null;
     }
 
     /**
      * Print out the opening message for the user.
      */
-    private void printWelcome() {
+    private String printWelcome() {
         //Says:
         //"Welcome to Fotoshop!"
         //"Fotoshop is an amazing new, image editing tool."
         //"Type 'help' if you need help."
         //
         //"The current image is " + name
-        System.out.printf(i18nWordsMapping.get("welcome"), name);
-        System.out.println();
+        return String.format(i18nWordsMapping.get("welcome"), name);
     }
 
     /**
@@ -165,24 +165,24 @@ public class Editor {
      *
      * @param command The command to be processed.
      */
-    private void processCommand(Command command) {
+    private String processCommand(Command command) {
+        String output = "";
         // If word inputted is not in list of Command words
         if (!command.isValid()) {
-            System.out.println(i18nWordsMapping.get("iDontKnow"));
-            return;
+            return i18nWordsMapping.get("iDontKnow");
         }
 
         if ((command.getCommandClass()).equals("Editor")) {
-            this.callMethod(this, command);
+            output += this.callMethod(this, command);
         } else if ((command.getCommandClass()).equals("Image")) {
             if (this.currentImage != null) {
                 this.currentImage.addChanges( this.currentImage.getImage() );
                 callMethod(this.currentImage, command);
             } else {
-                System.out.println("No Image is currently loaded at the moment");
-                //System.out.printf(i18nWordsMapping.get("noImage"));
+                output += String.format(i18nWordsMapping.get("noImageLoaded"));
             }
         }
+        return output;
     }
 
 //----------------------------------
@@ -193,10 +193,8 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-    private void help(Command command) {
-        System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
-        System.out.println();
-        return;
+    private String help(Command command) {
+        return String.format(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
     }
 
     /**
@@ -204,20 +202,8 @@ public class Editor {
      * @param name The name of the image file
      * @return a ColorImage containing the image
      */
-    private ColorImage loadImage(String name) {
-        ColorImage img = null;
-
-        try {
-            img = new ColorImage(ImageIO.read(new File(name)));
-        } catch (IOException e) {
-            // Says: "Cannot find image file, "
-            System.out.printf(i18nWordsMapping.get("cannotFindImageFile"), name);
-            System.out.println();
-            // Says: "cwd is " + System.getProperty("user.dir")
-            System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.println();
-        }
-
+    private ColorImage loadImage(String name) throws IOException {
+        ColorImage img = new ColorImage(ImageIO.read(new File(name)));
         return img;
     }
 
@@ -227,26 +213,32 @@ public class Editor {
      * and use as the current image.
      * @param command the command given.
      */
-    private void open(Command command) {
+    private String open(Command command) {
         int fileName = 2;
+        ColorImage img = null;
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
-            System.out.println(i18nWordsMapping.get("openWhat"));
-            return;
+            return i18nWordsMapping.get("openWhat");
         }
-
+        String output = "";
         String inputName = command.getWord(2);
-        ColorImage img = loadImage(inputName);
-
+        try{
+            img = loadImage(inputName);
+        } catch (IOException e) {
+            // Says: "Cannot find image file, "
+            output += String.format(i18nWordsMapping.get("cannotFindImageFile"), name);
+            // Says: "cwd is " + System.getProperty("user.dir")
+            output += String.format(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
+        }
+        
         if (img == null) {
-            help(command);
+            return output + help(command);
         } else {
             currentImage = new Image(img);
             // TODO: put image name in the Image class
             name = inputName;
             // Says: "Loaded "
-            System.out.printf(i18nWordsMapping.get("loaded"), name);
-            System.out.println();
+            return String.format(i18nWordsMapping.get("loaded"), name);
         }
     }
 
@@ -255,52 +247,50 @@ public class Editor {
      * second word of the command.
      * @param command the command given
      */
-    private void save(Command command) {
+    private String save(Command command) {
         if (currentImage == null) {
-            help(command);
-            return;
+            String output = "Sorry no image is loaded.\r\n";
+            output += help(command);
+            return output;
         }
 
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know where to save...
             // Says: "save where?"
-            System.out.println(i18nWordsMapping.get("saveWhere"));
-            return;
+            return i18nWordsMapping.get("saveWhere");
         }
 
         String outputName = command.getWord(2);
         try {
             File outputFile = new File(outputName);
             ImageIO.write(currentImage.getImage(), "jpg", outputFile);
-            System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
-            System.out.println();
+            return String.format(i18nWordsMapping.get("imageSavedTo"), outputName);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
-            help(command);
+            String output = "Sorry no image is loaded.\r\n";
+            output += help(command);
+            return output;
         }
     }
 
     /**
      * "look" was entered. Report the status of the work bench.
      */
-    private void look(Command command) {
+    private String look(Command command) {
         if (currentImage == null) {
-          System.out.println(i18nWordsMapping.get("noImageLoaded"));
-          return;
+          return i18nWordsMapping.get("noImageLoaded");
         }
+        String output = "";
+        output += String.format(i18nWordsMapping.get("currentImageIs"), name);
+        output += String.format(i18nWordsMapping.get("filtersApplied") + " ");
 
-        System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
-        System.out.println();
-        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
-        System.out.println();
 
         for (String filter: currentImage.getFilters()) {
             if (filter != null) {
-                System.out.print(filter + " ");
+                output += filter + " ";
             }
         }
-
-        System.out.println();
+        output += "/r/n";
+        return output;
     }
 
     /**
@@ -313,11 +303,10 @@ public class Editor {
      * the script file.
      * @return whether to quit.
      */
-    private void script(Command command) {
+    private String script(Command command) {
         if (!command.hasWord(2)) {
             // if there is no second word, we don't know what to open...
-            System.out.println(i18nWordsMapping.get("whichScript"));
-            return;
+            return i18nWordsMapping.get("whichScript");
         }
 
         String scriptName = command.getWord(2);
@@ -330,16 +319,14 @@ public class Editor {
                     Command cmd = scriptParser.getCommand(true);
                     processCommand(cmd);
                 } catch (Exception ex) {
-                    return;
+                    return "";
                 }
             }
             // Reset the internal state of execution - the _script_ has finished, not the program
             this.finished = false;
-            return;
+            return "";
         } catch (FileNotFoundException ex) {
-            System.out.printf(i18nWordsMapping.get("cannotFind"), scriptName);
-            System.out.println();
-            return;
+            return String.format(i18nWordsMapping.get("cannotFind"), scriptName);
         } catch (IOException ex) {
             throw new RuntimeException(i18nWordsMapping.get("panic"));
         }
@@ -351,12 +338,12 @@ public class Editor {
      * @param command the command given.
      * @return true, if this command quits the editor, false otherwise.
      */
-    private void quit(Command command) {
+    private String quit(Command command) {
         if (command.hasWord(2)) {
-            System.out.println(i18nWordsMapping.get("quitWhat"));
-            return;
+            return i18nWordsMapping.get("quitWhat");
         } else {
           this.finished = true;
+          return "";
         }
     }
 
@@ -365,18 +352,16 @@ public class Editor {
    * @param command the command given
    * @return true, if this command quits the editor, false otherwise.
    */
-    private void undo(Command command) {
+    private String undo(Command command) {
         if (command.hasWord(2)) {
-          System.out.println("'redo' method accepts 0 parameters.");
-          return;
+          return "'redo' method accepts 0 parameters./r/n";
         }
 
-      if (!this.currentImage.getChanges().isEmpty()){
-          this.currentImage.setImage(this.currentImage.getChanges().pop());
-          System.out.println("Image reverted to previous state.");
-      } else {
-          System.out.println("There is nothing to undo!");
-      }
-      return;
+        if (!this.currentImage.getChanges().isEmpty()){
+            this.currentImage.setImage(this.currentImage.getChanges().pop());
+            return "Image reverted to previous state./r/n";
+        } else {
+            return "There is nothing to undo!";
+        }
     }
 }
