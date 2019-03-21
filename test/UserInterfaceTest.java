@@ -7,6 +7,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.*;
 import org.junit.After;
@@ -52,7 +54,30 @@ public class UserInterfaceTest
         //System.out.println(result);
         return result.contains(output);
     }
-    
+    public boolean printCapture(String input, String[] outputs){
+        String[] args = null;
+
+        
+        input = input + System.lineSeparator() + "quit";
+        // Input String
+        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+        // Quit Program
+        ///in = new ByteArrayInputStream("quit".getBytes());
+        ///System.setIn(in);
+        Main.main(args);
+        String result = baos.toString();
+        
+        boolean out = true;
+        
+        for(String output: outputs){
+            if(out){
+                out = result.contains(output);
+            }
+        }
+        
+        return out;
+    }
     public String printCapture(String input){
         String[] args = null;
 
@@ -88,6 +113,18 @@ public class UserInterfaceTest
         String result = baos.toString();
         return result;
     }
+    public boolean printCapture(String[] inputs, String[] outputs){
+        String result = printCapture(inputs);
+        boolean out = true;
+        
+        for(String output: outputs){
+            if(out){
+                out = result.contains(output);
+            }
+        }
+        
+        return out;
+    }
     /**
      * Sets up the test fixture.
      *
@@ -115,21 +152,22 @@ public class UserInterfaceTest
     
     @Test
     public void welcomeMessageTest(){
-        String output = "Welcome to Fotoshop!\r\nFotoshop is an amazing new, image editing tool.\r\nType 'help' if you need help.\r\n\r\nThe current image is null\r\nFilters applied: "; 
-        String input = "quit";
+        String input = "quit";     
+        String[] output = {"Welcome to Fotoshop!",
+                           "Fotoshop is an amazing new, image editing tool.",
+                           "Type 'help' if you need help.",
+                           "The current image is:",
+                           "Filters applied:"
+                           }; 
         assertTrue(printCapture(input,output));
     }
-   
+    
     @Test
     public void helpMessageTest(){
-        String output = "You are using Fotoshop.\r\n\r\nYour command words are:"; 
         String input = "help";
-        String result = printCapture(input);
-        
-        boolean lineOne = result.contains(output);
-        output = "open save look mono flipH rot90 help quit";
-        boolean lineTwo = result.contains(output);
-        assertTrue(lineOne || lineTwo);
+        String[] output = {"You are using Fotoshop.","Your command words are:",
+            "open","save", "look", "mono", "flipH", "rot90", "help", "quit"};
+        assertTrue(printCapture(input,output));
     }
     @Test
     public void unknownTest(){

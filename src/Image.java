@@ -111,6 +111,7 @@ public class Image {
     System.out.println("rot90<---");
     filters.add("rot90");
   }
+
    /**
    * Flips image Horizontally
    * and update the internal image reference.

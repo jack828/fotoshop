@@ -212,8 +212,9 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-    private void help(Command command) {
+    private boolean help(Command command) {
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+        return false;
     }
 
     /**
