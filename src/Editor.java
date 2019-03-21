@@ -33,12 +33,11 @@ public class Editor {
 
     private Parser parser;
     private Image currentImage;
-    private String name;
 
     private Scanner reader;
     private static Editor editor;
 
-    private HashMap<Image, String> imageCache;
+    private HashMap<String, Image> imageCache;
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
         "welcome",
@@ -68,7 +67,7 @@ public class Editor {
         this.parser = new Parser();
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
-        this.imageCache = new HashMap<Image, String>();
+        this.imageCache = new HashMap<String, Image>();
     }
 
     public static Editor getInstence(){
@@ -186,7 +185,7 @@ public class Editor {
         //"Type 'help' if you need help."
         //
         //"The current image is " + name
-        System.out.printf(i18nWordsMapping.get("welcome"), name);
+        System.out.println(i18nWordsMapping.get("welcome"));
         System.out.println();
     }
 
@@ -277,11 +276,11 @@ public class Editor {
         if (img == null) {
             help(command);
         } else {
-            currentImage = new Image(img);
+            currentImage = new Image(inputName, img);
             // TODO: put image name in the Image class
-            name = inputName;
+            currentImage.setName(inputName);
             // Says: "Loaded "
-            System.out.printf(i18nWordsMapping.get("loaded"), name);
+            System.out.printf(i18nWordsMapping.get("loaded"), currentImage.getName());
             System.out.println();
         }
 
@@ -328,20 +327,22 @@ public class Editor {
           System.out.println(i18nWordsMapping.get("noImageLoaded"));
           return false;
         }
+        else {
 
-        System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
-        System.out.println();
-        System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
-        System.out.println();
+            System.out.printf(i18nWordsMapping.get("currentImageIs"), currentImage.getName());
+            System.out.println();
+            System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
+            System.out.println();
 
-        for(String filter: currentImage.getFilters()){
-            if (filter != null) {
-                System.out.print(filter + " ");
+            for (String filter : currentImage.getFilters()) {
+                if (filter != null) {
+                    System.out.print(filter + " ");
+                }
             }
-        }
 
-        System.out.println();
-        return false;
+            System.out.println();
+            return false;
+        }
     }
 
     /**
@@ -433,7 +434,7 @@ public class Editor {
      * @return true if this command quite the editor, false otherwise.
      */
     private boolean put(Command command){
-        this.imageCache.put(this.currentImage, command.getWord(1));
+        this.imageCache.put(command.getWord(2), this.currentImage);
         System.out.println("Placed current working image into cache");
 
         return false;
@@ -445,8 +446,15 @@ public class Editor {
      * @return true if this command quit the editor, false otherwise.
      */
     private boolean get(Command command){
-        this.imageCache.get(command.getWord(1));
-        System.out.println("Now working on: " + command.getWord(1));
+        Image imageToSet = imageCache.get(command.getWord(2));
+
+        if (imageToSet == null){
+            System.out.println("Unable to find an image with the key: " + command.getWord(2));
+            return false;
+        }
+
+        this.currentImage = imageToSet;
+        System.out.println("Now working on: " + command.getWord(2));
 
         return false;
     }
