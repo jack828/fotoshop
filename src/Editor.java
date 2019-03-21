@@ -232,11 +232,6 @@ public class Editor {
      */
     private void help(Command command) {
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
-<<<<<<< HEAD
-        System.out.println();
-        return false;
-=======
->>>>>>> parent of a85666f... Merge branch 'jUnit-Test'
     }
 
     /**

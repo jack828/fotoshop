@@ -29,10 +29,7 @@ public class UserInterfaceTest
     public UserInterfaceTest()
     {
     }
-<<<<<<< HEAD
 
-=======
-    
     public boolean printCapture(String input, String output){
         String[] args = null;
 
@@ -88,7 +85,6 @@ public class UserInterfaceTest
         String result = baos.toString();
         return result;
     }
->>>>>>> parent of a85666f... Merge branch 'jUnit-Test'
     /**
      * Sets up the test fixture.
      *
@@ -112,24 +108,6 @@ public class UserInterfaceTest
         System.out.flush();
         System.setOut(old);
     }
-<<<<<<< HEAD
-    public boolean printCapture(String input, String output)
-    {
-        String[] args = null;
-        input += System.lineSeparator() + "quit";
-        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in);
-        Main.main(args);
-        System.setIn(oringinalIn);
-        
-        System.out.flush();
-        System.setOut(old);
-        
-        //System.out.println("-->"+baos+"<--");
-        String result = baos.toString();
-        return result.contains(output);
-=======
-    
     @Test
     public void welcomeMessageTest(){
         String output = "Welcome to Fotoshop!\r\nFotoshop is an amazing new, image editing tool.\r\nType 'help' if you need help.\r\n\r\nThe current image is null\r\nFilters applied: "; 
@@ -153,7 +131,6 @@ public class UserInterfaceTest
         String output = "I don't know what you mean...";
         String input = "qqqqq";
         assertTrue(printCapture(input,output));
->>>>>>> parent of a85666f... Merge branch 'jUnit-Test'
     }
     @Test
     public void quitTest()
