@@ -1,5 +1,3 @@
-import com.sun.istack.internal.Nullable;
-
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -38,7 +36,7 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public Command getCommand(@Nullable boolean hidePrompt)
+    public Command getCommand(boolean hidePrompt)
     {
         String inputLine;   // will hold the full input line
         ArrayList<String> words = new ArrayList<>();

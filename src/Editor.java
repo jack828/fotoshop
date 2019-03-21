@@ -100,7 +100,7 @@ public class Editor {
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
         while (!this.finished) {
-            Command command = getCommand();
+            Command command = this.parser.getCommand(false);
             processCommand(command);
         }
         // Says: "Thank you for using Fotoshop.  Good bye."
@@ -146,27 +146,6 @@ public class Editor {
         }
     }
 
-    /**
-     * @return The next command from the user.
-     */
-    public Command getCommand()
-    {
-        String inputLine;   // will hold the full input line
-        ArrayList<String> words = new ArrayList<>();
-
-        System.out.print("> ");     // print prompt
-
-        inputLine = reader.nextLine();
-
-        // Find up to two words on the line.
-        Scanner tokenizer = new Scanner(inputLine);
-
-        while(tokenizer.hasNext()){
-            words.add(tokenizer.next());
-        }
-
-        return new Command(words);
-    }
     /**
      * Print out the opening message for the user.
      */
