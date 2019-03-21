@@ -1,6 +1,11 @@
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  * This class contains a reference to the current image, and allows
@@ -76,15 +81,80 @@ public class Image {
       for (int x = 0; x < width; x++) {
         Color pixel = tmpImage.getPixel(x, y);
         int lum = (int) Math.round(
-            redValue * pixel.getRed()
-          + greenValue * pixel.getGreen()
-          + blueValue * pixel.getBlue());
+                 redValue * pixel.getRed()
+                + greenValue * pixel.getGreen()
+                + blueValue * pixel.getBlue());
         tmpImage.setPixel(x, y, new Color(lum, lum, lum));
       }
     }
     this.image = tmpImage;
 
     filters.add("mono");
+  }
+  
+  
+  
+  
+  
+  
+  public void watermark() {
+      try {
+          double intensity = 0.5;
+          
+          ColorImage tmpImage = new ColorImage(this.image);
+          int height = tmpImage.getHeight();
+          int width = tmpImage.getWidth();
+          
+          ColorImage wmImage = new ColorImage(ImageIO.read(new File("watermark.png")));
+          int wmHeight = wmImage.getHeight();
+          int wmWidth = wmImage.getWidth();
+          
+          double ratio;
+          
+          if(wmWidth > wmHeight){
+              ratio = (double)width/(double)wmWidth;
+          }else{
+              ratio = (double)height/(double)wmHeight;
+          }
+          int newWmWidth = (int) (wmWidth*ratio);
+          int newWmHeight = (int) (wmHeight*ratio);
+          
+          int spaceX = (width - newWmWidth)/2;
+          int spaceY = (height - newWmHeight)/2;
+          
+          int wmX = 0;
+          int wmY = 0;
+          for (int y = 0; y < height; y++) {
+              for (int x = 0; x < width; x++) {
+                  Color wmPixel;
+                  double i = 1;
+                  
+                  if(x<spaceX || y<spaceY){
+                      i = 1;
+                  }else{
+                        wmX = (int)((double)(x-spaceX) / ratio);
+                        wmY = (int)((double)(y-spaceY) / ratio);
+                        if((wmX+spaceX) < wmWidth && (wmY+spaceY) < wmHeight){
+                            wmPixel = wmImage.getPixel(wmX, wmY);
+                            int opacity = wmPixel.getGreen();   
+                            i = (opacity > 250) ? 1 : intensity;
+                        }
+                  }
+                  
+                  Color pixel = tmpImage.getPixel(x, y);
+                  int red = (pixel.getRed()*i> 255) ? 255 : (int)(pixel.getRed()*i);
+                  int green = (pixel.getGreen()*i> 255) ? 255 : (int)(pixel.getGreen()*i);
+                  int blue = (pixel.getBlue()*i> 255) ? 255 : (int)(pixel.getBlue()*i);
+                  
+                  tmpImage.setPixel(x, y, new Color(red,green,blue));
+              }
+          }
+          this.image = tmpImage;
+          
+          filters.add("watermark");
+      } catch (IOException ex) {
+          System.out.println(ex);
+      }
   }
 
   /**

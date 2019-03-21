@@ -203,7 +203,7 @@ public class Editor {
             System.out.println(i18nWordsMapping.get("iDontKnow"));
             return wantToQuit;
         }
-
+        
         if((command.getCommandClass()).equals("Editor")){
             wantToQuit = callMethod(this,command);
         }else if((command.getCommandClass()).equals("Image")){
