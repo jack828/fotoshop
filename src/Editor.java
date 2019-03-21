@@ -35,10 +35,10 @@ public class Editor {
     private Image currentImage;
     private String name;
 
-    private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
     private static Editor editor;
 
+    private HashMap<Image, String> imageCache;
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
         "welcome",
@@ -68,6 +68,7 @@ public class Editor {
         this.parser = new Parser();
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
+        this.imageCache = new HashMap<Image, String>();
     }
 
     public static Editor getInstence(){
@@ -407,7 +408,7 @@ public class Editor {
   /**
    * "undo" was entered. Reverts the current image to its most recent state
    * @param command the command given
-   * @return true, if this command quits the editor, false otherwise.
+   * @return true if this command quits the editor, false otherwise.
    */
     private boolean undo(Command command) {
       if (command.hasWord(2)) {
@@ -424,5 +425,29 @@ public class Editor {
 
       System.out.println("There is nothing to undo!");
       return false;
+    }
+
+    /**
+     * "put" was entered. Places a copy of the current working image into the image cache, using a string to identify it.
+     * @param command the command given
+     * @return true if this command quite the editor, false otherwise.
+     */
+    private boolean put(Command command){
+        this.imageCache.put(this.currentImage, command.getWord(1));
+        System.out.println("Placed current working image into cache");
+
+        return false;
+    }
+
+    /**
+     * Replaces the current working image one from the image cache, using a string to identify it.
+     * @param command the command given
+     * @return true if this command quit the editor, false otherwise.
+     */
+    private boolean get(Command command){
+        this.imageCache.get(command.getWord(1));
+        System.out.println("Now working on: " + command.getWord(1));
+
+        return false;
     }
 }
