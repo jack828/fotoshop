@@ -103,6 +103,48 @@ public class Editor {
         // Says: "Thank you for using Fotoshop.  Good bye."
         System.out.println(i18nWordsMapping.get("goodbye"));
     }
+     /**
+     * A method for calling other methods based on an inputted String and Command
+     * 
+     * @param o The Object the methods will be called from
+     * @param command The command that will be passed to the method
+     * @return A Boolean either given by the method called or False
+     */
+    public Boolean callMethod(Object o, Command command) {
+        // This word should be the name of the method being called
+        String commandWord = command.getWord(1).trim();
+        Boolean result = false;
+        
+        try {
+            // Name of the class the Object belongs to
+            String commandClass = o.getClass().getSimpleName();
+            // Class datatype of this class which will hold details of this class
+            Class c = Class.forName(commandClass);
+
+            // Method data type is initiated 
+            Method method;
+            
+            if(commandClass.equals("Editor")){
+                // An array of the of the Class datatype is made so that getDeclaredMethod
+                // will know the datatypes of the arguments passed to it
+                Class[] cArgs = { Command.class };
+                // The method is created by passing the methods name with the data type of its parameter
+                method = c.getDeclaredMethod(commandWord, cArgs);
+                // Command is passed to method
+                return (Boolean) method.invoke(o, command);
+            }else{
+                method = c.getDeclaredMethod(commandWord);
+                method.invoke(o);
+            }
+
+        } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            System.out.println(e); //<--- DELETE
+        } catch (NoSuchMethodException e) {
+            System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
+        }
+        return result; 
+    }
+    
     /**
      * @return The next command from the user.
      */
@@ -139,54 +181,27 @@ public class Editor {
      * @return true If the command ends the editing session, false otherwise.
      */
     private boolean processCommand(Command command) {
-      Boolean wantToQuit = false;
-      // If word inputted is not in list of Command words
-      if (!command.isValid()) {
-        System.out.println(i18nWordsMapping.get("iDontKnow"));
+
+        Boolean wantToQuit = false;
+        // If word inputted is not in list of Command words
+        if (!command.isValid()) {
+            System.out.println(i18nWordsMapping.get("iDontKnow"));
+            return wantToQuit;
+        }
+
+        if((command.getCommandClass()).equals("Editor")){
+            wantToQuit = callMethod(this,command);
+        }else if((command.getCommandClass()).equals("Image")){
+            if(this.currentImage != null){
+                //System.out.println("aaaa");
+                this.currentImage.addChanges( this.currentImage.getImage() );
+                wantToQuit = callMethod(this.currentImage,command);
+            }else{
+                System.out.println("No Image is currently loaded at the moment");
+                //System.out.printf(i18nWordsMapping.get("noImage"));
+            }
+        }
         return wantToQuit;
-      }
-
-      String commandWord = command.getWord(1);
-
-      String commandClass = command.getCommandClass();
-
-      try {
-          Class c = Class.forName(commandClass);
-          Class[] cArgs = { Command.class };
-          Method method;
-          Boolean result = false;
-
-          if (commandClass.equals("Editor")) {
-            method = c.getDeclaredMethod(commandWord.trim().toLowerCase(), cArgs);
-            result = (Boolean) method.invoke(this, command);
-          } else {
-              if(this.currentImage!=null){
-                method = c.getDeclaredMethod(commandWord.trim().toLowerCase());
-                ColorImage clone = this.currentImage.getImage();
-                this.currentImage.addChanges(clone);
-                method.invoke(this.currentImage);
-              }
-              else{
-                  System.out.printf(i18nWordsMapping.get("noImageLoaded"));
-              }
-          }
-          
-          // TODO remove
-          if (result == null) 
-              wantToQuit = false;
-          else 
-              wantToQuit = result;
-          
-      } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-          System.out.println(e); //<--- DELETE
-          return wantToQuit;
-      } catch (NoSuchMethodException e) {
-          System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
-          System.out.print("aaaaaa");
-      }
-
-      // This is important for quit() and script()
-      return wantToQuit;
     }
 
 //----------------------------------
@@ -214,10 +229,11 @@ public class Editor {
         } catch (IOException e) {
             // Says: "Cannot find image file, "
             System.out.printf(i18nWordsMapping.get("cannotFindImageFile"), name);
-            System.out.print("\n");
+            System.out.println();
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
-            System.out.print("aaa\n");
+            System.out.println();
+
         }
 
         return img;
@@ -249,6 +265,7 @@ public class Editor {
             name = inputName;
             // Says: "Loaded "
             System.out.printf(i18nWordsMapping.get("loaded"), name);
+            System.out.println();
         }
 
         return false;
