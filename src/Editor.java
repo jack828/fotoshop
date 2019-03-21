@@ -140,9 +140,9 @@ public class Editor {
             }
 
         } catch (ClassNotFoundException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            System.out.println(e); //<--- DELETE
+            return e + "\r\n"; //<--- DELETE
         } catch (NoSuchMethodException e) {
-            System.out.printf("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
+            return String.format("%s: %s%s%s", i18nWordsMapping.get("noSuchMethod"), "\"", commandWord, "\"");
         }
         return null;
     }
