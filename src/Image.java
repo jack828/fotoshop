@@ -108,7 +108,6 @@ public class Image {
       }
     }
     this.image = rotImage;
-    System.out.println("rot90<---");
     filters.add("rot90");
   }
 

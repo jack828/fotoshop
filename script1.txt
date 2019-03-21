@@ -1,0 +1,7 @@
+open input.jpg
+look
+rot90
+mono
+flipH
+save output.jpg
+quit
