@@ -131,4 +131,24 @@ public class Image {
 
     filters.add("flipH");
   }
+   /**
+   * Flips image Vertically
+   * and update the internal image reference.
+   *
+   */
+   public void flipV() {
+    int height = this.image.getHeight();
+    int width = this.image.getWidth();
+    ColorImage rotImage = new ColorImage(width, height);
+
+    for (int y = 0; y < height; y++) { // in the flipped image
+      for (int x = 0; x < width; x++) {
+        Color pixel = this.image.getPixel(x, y);
+        rotImage.setPixel(x,height - y - 1, pixel);
+      }
+    }
+    this.image = rotImage;
+
+    filters.add("flipV");
+  }
 }
