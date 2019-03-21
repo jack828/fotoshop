@@ -99,7 +99,7 @@ public class I18NJUnitTest
             }
         }
         
-        Assert.assertEquals("Hello World!", I18N.getString("testString1"));
+        Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
     }
     
     /**
@@ -126,7 +126,7 @@ public class I18NJUnitTest
     public void testSetLanguageNoPropsFile()
     {
         I18N.setLanguage("nonexistent");
-        Assert.assertEquals("Hello World!", I18N.getString("testString1"));
+        Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
     }
     
     /**
@@ -136,9 +136,9 @@ public class I18NJUnitTest
     @Test
     public void testSetLanguageLanguageChangeCapability(){
         I18N.setLanguage("default");
-        Assert.assertEquals("Hello World!", I18N.getString("testString1"));
+        Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
         I18N.setLanguage("japanese");
-        Assert.assertEquals("おはよ世界!", I18N.getString("testString1"));
+        Assert.assertEquals("おはよ世界!%n", I18N.getString("testString1"));
     }
      
     /**
@@ -159,7 +159,7 @@ public class I18NJUnitTest
     {
         Assert.assertEquals(null, I18N.getCurrentLocale());
         
-        Assert.assertEquals("Hello World!", I18N.getString("testString1"));
+        Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
         Assert.assertEquals(new Locale("en", "US"), I18N.getCurrentLocale());
         
         resetStaticVariables();
