@@ -58,7 +58,10 @@ public class Editor {
         "panic",
         "quitWhat",
         "noImageLoaded",
-        "noSuchMethod"
+        "noSuchMethod",
+        "redoMethodPrompt",
+        "imageRevertedPrompt",
+        "nothingToUndoPrompt"
     };
 
     /**
@@ -208,12 +211,10 @@ public class Editor {
             wantToQuit = callMethod(this,command);
         }else if((command.getCommandClass()).equals("Image")){
             if(this.currentImage != null){
-                //System.out.println("aaaa");
                 this.currentImage.addChanges( this.currentImage.getImage() );
                 wantToQuit = callMethod(this.currentImage,command);
             }else{
-                System.out.println("No Image is currently loaded at the moment");
-                //System.out.printf(i18nWordsMapping.get("noImage"));
+                System.out.printf(i18nWordsMapping.get("noImageLoaded"));
             }
         }
         return wantToQuit;
@@ -411,18 +412,18 @@ public class Editor {
    */
     private boolean undo(Command command) {
       if (command.hasWord(2)) {
-        System.out.println("'redo' method accepts 0 parameters.");
+        System.out.println(i18nWordsMapping.get("redoMethodPrompt"));
         return false;
       }
 
       if (!this.currentImage.getChanges().isEmpty()){
           this.currentImage.setImage(this.currentImage.getChanges().pop());
-          System.out.println("Image reverted to previous state.");
+          System.out.println(i18nWordsMapping.get("imageRevertedPrompt"));
 
           return false;
         }
 
-      System.out.println("There is nothing to undo!");
+      System.out.println(i18nWordsMapping.get("nothingToUndoPrompt"));
       return false;
     }
 }
