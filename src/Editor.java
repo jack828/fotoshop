@@ -37,6 +37,7 @@ public class Editor {
 
     private ArrayList<String> filters = new ArrayList<>();
     private Scanner reader;
+    private static Editor editor;
 
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
@@ -63,10 +64,17 @@ public class Editor {
     /**
      * Create the editor and initialise its parser.
      */
-    public Editor() {
-        parser = new Parser();
-        reader = new Scanner(System.in);
-        i18nWordsMapping = returnLanguageHashMap("default");
+    private Editor() {
+        this.parser = new Parser();
+        this.reader = new Scanner(System.in);
+        this.i18nWordsMapping = returnLanguageHashMap("default");
+    }
+
+    public static Editor getInstence(){
+        if(editor == null){
+            Editor.editor = new Editor();
+        }
+        return editor;
     }
 
     /**
@@ -133,6 +141,7 @@ public class Editor {
                 // Command is passed to method
                 return (Boolean) method.invoke(o, command);
             }else{
+                // This part is for methods that do not have arguments
                 method = c.getDeclaredMethod(commandWord);
                 method.invoke(o);
             }
@@ -170,6 +179,12 @@ public class Editor {
      * Print out the opening message for the user.
      */
     private void printWelcome() {
+        //Says:
+        //"Welcome to Fotoshop!"
+        //"Fotoshop is an amazing new, image editing tool."
+        //"Type 'help' if you need help."
+        //
+        //"The current image is " + name
         System.out.printf(i18nWordsMapping.get("welcome"), name);
         System.out.println();
     }
@@ -214,6 +229,7 @@ public class Editor {
      */
     private boolean help(Command command) {
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+        System.out.println();
         return false;
     }
 
@@ -234,7 +250,6 @@ public class Editor {
             // Says: "cwd is " + System.getProperty("user.dir")
             System.out.printf(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
             System.out.println();
-
         }
 
         return img;
@@ -251,7 +266,7 @@ public class Editor {
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
             // Says: "open what?"
-            System.out.println(i18nWordsMapping.get("openWhat"));
+            System.out.println(i18nWordsMapping.get("openWhat") + "<--");
             return false;
         }
 
@@ -295,6 +310,7 @@ public class Editor {
             File outputFile = new File(outputName);
             ImageIO.write(currentImage.getImage(), "jpg", outputFile);
             System.out.printf(i18nWordsMapping.get("imageSavedTo"), outputName);
+            System.out.println();
         } catch (IOException e) {
             System.out.println(e.getMessage());
             help(command);
@@ -311,8 +327,11 @@ public class Editor {
           System.out.println(i18nWordsMapping.get("noImageLoaded"));
           return false;
         }
+
         System.out.printf(i18nWordsMapping.get("currentImageIs"), name);
+        System.out.println();
         System.out.print(i18nWordsMapping.get("filtersApplied") + " ");
+        System.out.println();
 
         for(String filter: currentImage.getFilters()){
             if (filter != null) {
@@ -361,6 +380,7 @@ public class Editor {
         catch (FileNotFoundException ex) {
             // Says: "Cannot find " + scriptName
             System.out.printf(i18nWordsMapping.get("cannotFind"), scriptName);
+            System.out.println();
             return false;
         }
         catch (IOException ex) {
