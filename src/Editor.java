@@ -230,10 +230,13 @@ public class Editor {
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
      */
-    private boolean help(Command command) {
+    private void help(Command command) {
         System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+<<<<<<< HEAD
         System.out.println();
         return false;
+=======
+>>>>>>> parent of a85666f... Merge branch 'jUnit-Test'
     }
 
     /**

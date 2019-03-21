@@ -110,7 +110,6 @@ public class Image {
     this.image = rotImage;
     filters.add("rot90");
   }
-
    /**
    * Flips image Horizontally
    * and update the internal image reference.
