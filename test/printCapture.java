@@ -26,18 +26,7 @@ public class printCapture {
     private PrintStream ps = new PrintStream(baos);
     private PrintStream old = System.out;
     private String result;
-    
 
-    public void writeToFile( String output){
-        PrintWriter writer;
-        try {
-            writer = new PrintWriter("the-file-name.txt", "UTF-8");
-            writer.println(output);
-            writer.close();
-        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
-            Logger.getLogger(UserInterfaceTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
     
     public printCapture(String input){
         System.setOut(ps);
