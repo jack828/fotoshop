@@ -1,3 +1,5 @@
+import editor.Editor;
+
 /**
  * This is the main class for the Fotoshop application
  *
