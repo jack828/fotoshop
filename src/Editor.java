@@ -54,7 +54,10 @@ public class Editor {
         "panic",
         "quitWhat",
         "noImageLoaded",
-        "noSuchMethod"
+        "noSuchMethod",
+        "redoMethodPrompt",
+        "imageRevertedPrompt",
+        "nothingToUndoPrompt"
     };
 
     /**
@@ -174,14 +177,13 @@ public class Editor {
         }
 
         if ((command.getCommandClass()).equals("Editor")) {
-            this.callMethod(this, command);
+            wantToQuit = callMethod(this,command);
         } else if ((command.getCommandClass()).equals("Image")) {
             if (this.currentImage != null) {
-                this.currentImage.addChanges( this.currentImage.getImage() );
-                callMethod(this.currentImage, command);
+                this.currentImage.addChanges(this.currentImage.getImage());
+                wantToQuit = callMethod(this.currentImage,command);
             } else {
-                System.out.println("No Image is currently loaded at the moment");
-                //System.out.printf(i18nWordsMapping.get("noImage"));
+                System.out.printf(i18nWordsMapping.get("noImageLoaded"));
             }
         }
     }
@@ -371,15 +373,15 @@ public class Editor {
    */
     private void undo(Command command) {
         if (command.hasWord(2)) {
-          System.out.println("'redo' method accepts 0 parameters.");
+          System.out.println(i18nWordsMapping.get("redoMethodPrompt"));
           return;
         }
 
       if (!this.currentImage.getChanges().isEmpty()){
           this.currentImage.setImage(this.currentImage.getChanges().pop());
-          System.out.println("Image reverted to previous state.");
+          System.out.println(i18nWordsMapping.get("imageRevertedPrompt"));
       } else {
-          System.out.println("There is nothing to undo!");
+          System.out.println(i18nWordsMapping.get("nothingToUndoPrompt"));
       }
       return;
     }
@@ -389,11 +391,9 @@ public class Editor {
      * @param command the command given
      * @return true if this command quite the editor, false otherwise.
      */
-    private boolean put(Command command){
+    private void put(Command command) {
         this.imageCache.put(command.getWord(2), this.currentImage);
         System.out.println("Placed current working image into cache");
-
-        return false;
     }
 
     /**
@@ -401,17 +401,16 @@ public class Editor {
      * @param command the command given
      * @return true if this command quit the editor, false otherwise.
      */
-    private boolean get(Command command){
+    private void get(Command command) {
         Image imageToSet = imageCache.get(command.getWord(2));
 
         if (imageToSet == null){
             System.out.println("Unable to find an image with the key: " + command.getWord(2));
-            return false;
+            return;
         }
-
         this.currentImage = imageToSet;
         System.out.println("Now working on: " + command.getWord(2));
 
-        return false;
+        return;
     }
 }
