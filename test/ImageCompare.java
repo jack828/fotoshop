@@ -60,7 +60,6 @@ public class ImageCompare {
                 if(!check){break;}
             }
         } catch (IOException ex) {
-            Logger.getLogger(Test2.class.getName()).log(Level.SEVERE, null, ex);
         }
         return check;
     }

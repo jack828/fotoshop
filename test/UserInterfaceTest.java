@@ -181,7 +181,7 @@ public class UserInterfaceTest
     @Test
     public void saveNoImageTest(){
         String input = "save";
-        String output = "Sorry no image is loaded.";
+        String output = "No Image is currently loaded at the moment.";
 
         printCapture o = new printCapture(input);
         assertTrue(o.contains(output));
@@ -244,7 +244,9 @@ public class UserInterfaceTest
                           "look"
                         };
         String[] output = {"The current image is input.jpg",
-                           "Filters applied:  mono flipH"
+                           "Filters applied:",
+                           "mono",
+                           "flipH"
                           };
         printCapture o = new printCapture(input);
         assertTrue(o.contains(output));
