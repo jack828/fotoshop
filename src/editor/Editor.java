@@ -40,8 +40,6 @@ public class Editor {
     private Image currentImage;
     private boolean finished;
 
-    private Scanner reader;
-
     private HashMap<String, Image> imageCache;
     private HashMap<String, String> i18nWordsMapping;
 
@@ -71,7 +69,8 @@ public class Editor {
         "redoMethodPrompt",
         "imageRevertedPrompt",
         "nothingToUndoPrompt",
-        "imageInCache"
+        "imageInCache",
+        "watermarkError"
     };
 
     /**
@@ -79,7 +78,6 @@ public class Editor {
      */
     public Editor() {
         this.parser = new Parser();
-        this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
         this.imageCache = new HashMap<String, Image>();
         this.finished = false;
@@ -102,6 +100,7 @@ public class Editor {
         commands.put("rot90", new Rot90Command());
         commands.put("flipH", new FlipHCommand());
         commands.put("flipV", new FlipVCommand());
+        commands.put("watermark", new WatermarkCommand());
     }
 
     /**
