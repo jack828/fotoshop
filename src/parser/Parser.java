@@ -38,7 +38,9 @@ public class Parser
         reader = new Scanner(str);
     }
     /**
-     * @return The next command from the user.
+     * Get an array of words from the user
+     * @param hidePrompt whether or not to show the prompt
+     * @return The next words from the input.
      */
     public ArrayList<String> getCommand(boolean hidePrompt)
     {

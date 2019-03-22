@@ -9,14 +9,10 @@ import java.util.ArrayList;
  * This class is an abstract superclass for all commands in the editor.
  * Each command should implement it's own subclass, extending the execute method.
  *
- * The way this is used is: Commands are already checked for being valid
- * command words. If the user entered an invalid command (a word that is not
- * known) then the command word is <null>.
+ * Calling the implementing method requires no knowledge about the implementation.
  *
- * If the command had only one word, then the second word is <null>.
- *
- * @author  Michael Kolling and David J. Barnes
- * @version 2006.03.30
+ * @author  Jack Burgess
+ * @version 2019.03.22
  */
 
 public abstract class Command {

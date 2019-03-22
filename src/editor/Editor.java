@@ -113,7 +113,7 @@ public class Editor {
 
     /**
      * Set the state of the main loop
-     * @param finished If the program should exit or not 
+     * @param finished If the program should exit or not
      */
     public void setFinished(boolean finished) {
       this.finished = finished;
@@ -129,6 +129,7 @@ public class Editor {
 
     /**
      * Gets the current working image
+     * @return the current working image
      */
     public Image getImage() {
       return this.currentImage;
@@ -136,7 +137,7 @@ public class Editor {
 
     /**
      * Get the I18N word map
-     * @return I18N HashMap which holds the messages which will be printed to 
+     * @return I18N HashMap which holds the messages which will be printed to
      * the user
      */
     public HashMap<String, String> getI18nMap() {
@@ -177,7 +178,7 @@ public class Editor {
     /**
      *
      * @param i18nKey i18n key for i18nWordsMapping HashMap
-     * @param formats Strings to be added into placeholders 
+     * @param formats Strings to be added into placeholders
      */
     public void print(String i18nKey, String ... formats) {
       System.out.printf(i18nWordsMapping.get(i18nKey), formats);
@@ -186,8 +187,8 @@ public class Editor {
     /**
      * Returns a HashMap containing the mapping of keywords to specific words
      * of the specific language the i18n.I18N module is set to.
-     * @param language E.g. "default" or "japanese" et cetera
-     * @return HashMap<String, String> consisting of the key-pair mapping
+     * @param language E.g. "default", "japanese" etc
+     * @return HashMap consisting of the key-pair mapping
      * of specific key values to language specific words
      */
     public HashMap<String, String> returnLanguageHashMap(String language){
