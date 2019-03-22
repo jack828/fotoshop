@@ -26,6 +26,7 @@ public class UserInterfaceTest
                            }; 
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     
@@ -36,6 +37,7 @@ public class UserInterfaceTest
             "open","save", "look", "mono", "flipH", "rot90", "help", "quit"};
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     @Test
@@ -44,6 +46,7 @@ public class UserInterfaceTest
         String output = "No Image is currently loaded at the moment";
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     @Test
@@ -52,6 +55,7 @@ public class UserInterfaceTest
         String output = "Save where?";
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     @Test
@@ -60,6 +64,7 @@ public class UserInterfaceTest
         String input = "qqqqq";
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
 
@@ -69,6 +74,7 @@ public class UserInterfaceTest
         String input = "open aaa";
 
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     @Test
@@ -77,6 +83,7 @@ public class UserInterfaceTest
         String input = "open input.jpg";
         
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     @Test
@@ -85,7 +92,8 @@ public class UserInterfaceTest
         String input = "look";
         
         printCapture o = new printCapture(input);
-        assertTrue(o.contains(output));
+        o.getOutput();
+        assertTrue(o.getOutput().contains(output));
     }
     @Test
     public void lookFiltersTest(){
@@ -100,6 +108,7 @@ public class UserInterfaceTest
                            "flipH"
                           };
         printCapture o = new printCapture(input);
+        o.getOutput();
         assertTrue(o.contains(output));
     }
     

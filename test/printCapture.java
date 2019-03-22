@@ -10,15 +10,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
- * @author Bobby
+ * A class for capturing the output of the Main class and comparing it with given Strings
+ * @author Robert Bromfield
  */
 public class printCapture {
     private static final InputStream oringinalIn = System.in;
@@ -26,54 +20,57 @@ public class printCapture {
     private PrintStream ps = new PrintStream(baos);
     private PrintStream old = System.out;
     private String result;
+    private String[] inputs;
 
     
     public printCapture(String input){
-        System.setOut(ps);
-        
-        String[] args = null;
-
-        input += System.lineSeparator() + "quit"+System.lineSeparator();
-        // Input String
-        ByteArrayInputStream in1 = new ByteArrayInputStream(input.getBytes());
-        System.setIn(in1);
-        Main.main(args);
-       
-        
-        this.result = baos.toString();
-        System.setIn(oringinalIn);
-        System.out.flush();
-        System.setOut(old);
+        String[] in = {input};
+        this.inputs = in;
     }
     public printCapture(String[] inputs){
+        this.inputs = inputs;
+    }
+    public String getOutput(){
+        // System.out is captured so prinnted line will be saved under 'baos'
         System.setOut(ps);
-        InputStream oringinalIn = System.in;
-        String[] args = null;
-
+        // Here "quit" is added to the end of inputs so the program will self-terminate     
         String input = "";
-        
-        for(String cmd: inputs){
+        for(String cmd: this.inputs){
             input += cmd + System.lineSeparator();
         }
         input += "quit";
         
-        
-        // Input String
+        // The input is turned into a Byte Array and added to System.setIn() 
+        // So it will act as user input
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
+        
+        // Here the Main method is called and the program is run
+        String[] args = null;
         Main.main(args);
         
-        
-        
-        this.result = baos.toString();
+        // System.in is returned to normal
         System.setIn(oringinalIn);
+        // System.out is reset
         System.out.flush();
         System.setOut(old);
-
+        // The captured output is turned into a string
+        this.result = baos.toString();
+        return this.result;
     }
+
+    /**
+     * @param output A String that is expected to be printed from given command
+     * @return A boolean which is true if output is printed. False otherwise.
+     */
     public boolean contains(String output){
         return this.result.contains(output);
     }
+
+    /**
+     * @param outputs An array of string that are expected to be printed from given command
+     * @return A boolean which is true if output is printed. False otherwise.
+     */
     public boolean contains(String[] outputs){
         boolean bool = true;
         for(String output : outputs){
