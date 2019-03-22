@@ -86,6 +86,8 @@ public class Editor {
 
         this.commands = new HashMap<String, Command>();
 
+        // Editor commands
+        commands.put("quit", new QuitCommand());
         commands.put("open", new OpenCommand());
         commands.put("save", new SaveCommand());
         commands.put("help", new HelpCommand());
@@ -94,6 +96,12 @@ public class Editor {
         commands.put("undo", new UndoCommand());
         commands.put("put", new PutCommand());
         commands.put("get", new GetCommand());
+
+        // Image commands
+        commands.put("mono", new MonoCommand());
+        commands.put("rot90", new Rot90Command());
+        commands.put("flipH", new FlipHCommand());
+        commands.put("flipV", new FlipVCommand());
     }
 
     public static Editor getInstance() {
@@ -211,25 +219,11 @@ public class Editor {
         Command command = this.commands.get(commandWords.get(0));
 
         if (command == null) {
-          // TODO fallback command
-            System.out.println(i18nWordsMapping.get("iDontKnow"));
-            return;
+          command = new UnknownCommand();
         }
 
         command.setWords(commandWords);
 
         command.execute(this);
-        /*
-        if ((command.getCommandClass()).equals("editor.Editor")) {
-            callMethod(this, command);
-        } else if ((command.getCommandClass()).equals("image.Image")) {
-            if (this.currentImage != null) {
-                this.currentImage.addChanges(this.currentImage.getImage());
-                callMethod(this.currentImage, command);
-            } else {
-                System.out.printf(i18nWordsMapping.get("noImageLoaded"));
-            }
-        }
-        */
     }
 }
