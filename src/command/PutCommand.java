@@ -7,6 +7,7 @@ public class PutCommand extends Command {
    * Places a copy of the current working image into the image cache, using a string to identify it.
    * @param editor The editor instance
    */
+  @Override
   public void execute(Editor editor) {
       if (!this.hasWord(2)) {
         editor.print("putWhat");

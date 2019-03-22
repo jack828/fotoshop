@@ -16,6 +16,7 @@ public class ScriptCommand extends Command {
    *
    * @param editor The editor instance
    */
+  @Override
   public void execute(Editor editor) {
     if (!this.hasWord(2)) {
       // if there is no second word, we don't know what to open...

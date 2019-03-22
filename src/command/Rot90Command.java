@@ -11,6 +11,7 @@ import java.awt.*;
     * Rotate the image 90 degrees
     * @param editor The editor instance
     */
+   @Override
    public void execute(Editor editor) {
        Image image = editor.getImage();
        if (image == null) {

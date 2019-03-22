@@ -79,7 +79,7 @@ public class Editor {
     public Editor() {
         this.parser = new Parser();
         this.i18nWordsMapping = returnLanguageHashMap("default");
-        this.imageCache = new HashMap<String, Image>();
+        this.imageCache = new HashMap<>();
         this.finished = false;
 
         this.commands = new HashMap<String, Command>();
@@ -105,6 +105,7 @@ public class Editor {
 
     /**
      * Get the state of the main loop
+     * @return If the program should exit or not
      */
     public boolean getFinished() {
       return this.finished;
@@ -112,6 +113,7 @@ public class Editor {
 
     /**
      * Set the state of the main loop
+     * @param finished If the program should exit or not 
      */
     public void setFinished(boolean finished) {
       this.finished = finished;
@@ -119,6 +121,7 @@ public class Editor {
 
     /**
      * Sets the current working image
+     * @param image Image type which will be set as current image
      */
     public void setImage(Image image) {
       this.currentImage = image;
@@ -133,6 +136,8 @@ public class Editor {
 
     /**
      * Get the I18N word map
+     * @return I18N HashMap which holds the messages which will be printed to 
+     * the user
      */
     public HashMap<String, String> getI18nMap() {
       return this.i18nWordsMapping;
@@ -140,6 +145,8 @@ public class Editor {
 
     /**
      * Put an image to the cache
+     * @param key What the user will type to load the image
+     * @param image The image that will be added to the cache
      */
     public void addToImageCache(String key, Image image) {
       this.imageCache.put(key, image);
@@ -147,6 +154,8 @@ public class Editor {
 
     /**
      * Get an image from the cache
+     * @param key What the image is called in the cache
+     * @return An Image which the user previously saved under the key name
      */
     public Image getFromImageCache(String key) {
       return this.imageCache.get(key);
@@ -154,6 +163,7 @@ public class Editor {
 
     /**
      * Get a string representation of the available commands
+     * @return A string representation of the commands which can be used
      */
     public String getCommands() {
       StringBuilder output = new StringBuilder();
@@ -166,6 +176,8 @@ public class Editor {
 
     /**
      *
+     * @param i18nKey i18n key for i18nWordsMapping HashMap
+     * @param formats Strings to be added into placeholders 
      */
     public void print(String i18nKey, String ... formats) {
       System.out.printf(i18nWordsMapping.get(i18nKey), formats);

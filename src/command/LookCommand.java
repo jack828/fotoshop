@@ -7,6 +7,7 @@ public class LookCommand extends Command {
   /**
    * Report the status of the work bench
    */
+  @Override
   public void execute(Editor editor) {
     Image image = editor.getImage();
     if (image == null) {

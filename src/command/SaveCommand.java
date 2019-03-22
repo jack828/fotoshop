@@ -12,6 +12,7 @@ public class SaveCommand extends Command {
    * Save the current image to the file given as the
    * second word of the command.
    */
+  @Override
   public void execute(Editor editor) {
     Image image = editor.getImage();
     if (image == null) {
