@@ -232,6 +232,7 @@ public class Editor {
      */
     private void open(Command command) {
         int fileName = 2;
+
         if (!command.hasWord(fileName)) {
             // if there is no second word, we don't know what to open...
             System.out.println(i18nWordsMapping.get("openWhat"));
