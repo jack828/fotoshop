@@ -60,19 +60,19 @@ public class Editor {
     /**
      * Create the editor and initialise its parser.
      */
-    private Editor() {
+    public Editor() {
         this.parser = new Parser();
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
         this.finished = false;
     }
 
-    public static Editor getInstance(){
-        if(editor == null){
-            Editor.editor = new Editor();
-        }
-        return editor;
-    }
+//    public static Editor getInstance(){
+//        if(editor == null){
+//            Editor.editor = new Editor();
+//        }
+//        return editor;
+//    }
 
     /**
      * Returns a HashMap containing the mapping of keywords to specific words

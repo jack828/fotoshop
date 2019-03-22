@@ -16,14 +16,12 @@ import java.io.PrintStream;
  */
 public class printCapture {
     private static final InputStream oringinalIn = System.in;
-    
-    private String output;
+    private ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private PrintStream ps = new PrintStream(baos);
+    private PrintStream old = System.out;
+    private String result;
         
-    public static String out(String input){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream ps = new PrintStream(baos);
-        PrintStream old = System.out;
-        
+    public printCapture(String input){
         System.setOut(ps);
         
         String[] args = null;
@@ -35,38 +33,49 @@ public class printCapture {
         Main.main(args);
        
         
-        String result = baos.toString();
+        this.result = baos.toString();
         System.setIn(oringinalIn);
         System.out.flush();
         System.setOut(old);
-        return result;
     }
-//    public static String printCapture(String[] inputs){
-//        System.setOut(ps);
-//        InputStream oringinalIn = System.in;
-//        String[] args = null;
-//
-//        String input = "";
-//        
-//        for(String cmd: inputs){
-//            input += cmd + System.lineSeparator();
-//        }
-//        input += "quit";
-//        
-//        // Input String
-//        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
-//        System.setIn(in);
-//        Main.main(args);
-//        
-//        
-//        
-//        String result = baos.toString();
-//        System.setIn(oringinalIn);
-//        System.out.flush();
-//        System.setOut(old);
-//        return result;
-//    }
+    public printCapture(String[] inputs){
+        System.setOut(ps);
+        InputStream oringinalIn = System.in;
+        String[] args = null;
+
+        String input = "";
+        
+        for(String cmd: inputs){
+            input += cmd + System.lineSeparator();
+        }
+        input += "quit";
+        
+        // Input String
+        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
+        Main.main(args);
+        
+        
+        
+        this.result = baos.toString();
+        System.setIn(oringinalIn);
+        System.out.flush();
+        System.setOut(old);
+
+    }
+    public boolean contains(String output){
+        return this.result.contains(output);
+    }
+    public boolean contains(String[] outputs){
+        boolean bool = true;
+        for(String output : outputs){
+            if(bool){
+                bool = this.result.contains(output);
+            }
+        }
+        return bool;
+    }
     public String getOutput(){
-        return this.output;
+        return this.result;
     }
 }
