@@ -1,0 +1,22 @@
+Welcome to Fotoshop!
+Fotoshop is an amazing new image editing tool.
+ Type 'help' if you need help.
+
+The current image is: null 
+Filters applied: 
+> Cannot find image file, aaa
+cwd is D:\Bobby\Documents\GitHub\fotoshop
+You are using Fotoshop.
+Your command words are:
+open save look help quit script undo mono flipH flipV rot90 
+
+> 
+Thank you for using Fotoshop.  Good bye.
+Welcome to Fotoshop!
+Fotoshop is an amazing new image editing tool.
+ Type 'help' if you need help.
+
+The current image is: null 
+Filters applied: 
+Thank you for using Fotoshop.  Good bye.
+1

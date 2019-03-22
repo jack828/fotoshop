@@ -226,7 +226,7 @@ public class Editor {
             img = loadImage(inputName);
         } catch (IOException e) {
             // Says: "Cannot find image file, "
-            output += String.format(i18nWordsMapping.get("cannotFindImageFile"), name);
+            output += String.format(i18nWordsMapping.get("cannotFindImageFile"), inputName);
             // Says: "cwd is " + System.getProperty("user.dir")
             output += String.format(i18nWordsMapping.get("cwdIs"), System.getProperty("user.dir"));
         }
