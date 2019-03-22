@@ -4,14 +4,23 @@ import java.util.*;
 import java.util.HashMap;
 
 /**
- * The i18n.I18N module has only 3 public static methods that needs to be taken note of:
- * 1) setLanguage(String language) - This can be used both to initialize the module or change the language being used.
- * 2) getString(String wordtoget) - This is used to get a key-pair value corresponding to the function argument from the properties file stated for the language currently set.
- *    if setLanguage() or getString() method was not run before, the i18n.I18N module is initialized to using the 'default' language as a default setting.
- * 3) getCurrentLocale() - Returns null if neither setLanguage() or getString() method was run before,
- *    & returns the Locale of the currently set language if the i18n.I18N module has been configured beforehand by the previous 2 methods.
+ * The I18N module has 3 public static methods that needs to be taken note of:
+ * 1) setLanguage(String language)
+ *    - This can be used both to initialize the module or change the language
+ *      being used.
+ * 2) getString(String key)
+ *    - This is used to get a key-pair value corresponding to the function
+ *      argument from the properties file stated for the language currently set.
+ *      if setLanguage() or getString() method was not run before, the I18N
+ *      module is initialized to using the 'default' language as a default
+ *      setting.
+ * 3) getCurrentLocale():
+ *    - Returns the currently set locale, or null if uninitialised
  *
- * For an example of how to use the i18n.I18N module, refer to I18NJUnitTest.java testSetLanguageLanguageChangeCapability() method.
+ * For an example of how to use the I18N module, refer to I18NJUnitTest.java
+ * testSetLanguageLanguageChangeCapability() method.
+ * @author Johnathan Chew, Bobby Bromfield, Jack Burgess
+ * @version 2019.03.22
  */
 
 public class I18N {
@@ -29,9 +38,8 @@ public class I18N {
       Map<String, String[]> sets = new HashMap<>();
         /* Language settings should be inserted below for initiaization purposes
            Ideally all of this values below should be moved to a properties file as well to facilitate testing */
-      sets.put("default", new String[]{ "en", "US", "default" });
+      sets.put("default", new String[]{ "en", "GB", "default" });
       sets.put("japanese", new String[]{ "jp", "JP", "japaneseProperties" });
-      sets.put("nonexistent", new String[]{ "en", "US", "nonexistent" });
       sets.put("arabic", new String[]{"ar", "DZ", "arabicProperties"});
 
       return sets;
