@@ -29,12 +29,12 @@ public class Editor {
 
     private Parser parser;
     private Image currentImage;
-    private String name;
     private boolean finished;
 
     private Scanner reader;
     private static Editor editor;
 
+    private HashMap<String, Image> imageCache;
     private HashMap<String, String> i18nWordsMapping;
     private static String[] EDITORTEXTSKEY = {
         "welcome",
@@ -54,7 +54,10 @@ public class Editor {
         "panic",
         "quitWhat",
         "noImageLoaded",
-        "noSuchMethod"
+        "noSuchMethod",
+        "redoMethodPrompt",
+        "imageRevertedPrompt",
+        "nothingToUndoPrompt"
     };
 
     /**
@@ -64,6 +67,7 @@ public class Editor {
         this.parser = new Parser();
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
+        this.imageCache = new HashMap<String, Image>();
         this.finished = false;
     }
 
@@ -157,7 +161,7 @@ public class Editor {
         //"Type 'help' if you need help."
         //
         //"The current image is " + name
-        return String.format(i18nWordsMapping.get("welcome"), name);
+        return String.format(i18nWordsMapping.get("welcome"));
     }
 
     /**
@@ -176,7 +180,7 @@ public class Editor {
             output += this.callMethod(this, command);
         } else if ((command.getCommandClass()).equals("Image")) {
             if (this.currentImage != null) {
-                this.currentImage.addChanges( this.currentImage.getImage() );
+                this.currentImage.addChanges(this.currentImage.getImage());
                 callMethod(this.currentImage, command);
             } else {
                 output += String.format(i18nWordsMapping.get("noImageLoaded"));
@@ -234,11 +238,11 @@ public class Editor {
         if (img == null) {
             return output + help(command);
         } else {
-            currentImage = new Image(img);
+            currentImage = new Image(inputName, img);
             // TODO: put image name in the Image class
-            name = inputName;
+            currentImage.setName(inputName);
             // Says: "Loaded "
-            return String.format(i18nWordsMapping.get("loaded"), name);
+            return String.format(i18nWordsMapping.get("loaded"), inputName);
         }
     }
 
@@ -278,19 +282,19 @@ public class Editor {
     private String look(Command command) {
         if (currentImage == null) {
           return i18nWordsMapping.get("noImageLoaded");
-        }
-        String output = "";
-        output += String.format(i18nWordsMapping.get("currentImageIs"), name);
-        output += String.format(i18nWordsMapping.get("filtersApplied") + " ");
+        }else {
+            String output = "";
+            output += String.format(i18nWordsMapping.get("currentImageIs"), currentImage.getName());
+            output += String.format(i18nWordsMapping.get("filtersApplied") + " ");
 
-
-        for (String filter: currentImage.getFilters()) {
-            if (filter != null) {
-                output += filter + " ";
+            for(String filter : currentImage.getFilters()) {
+                if (filter != null) {
+                    output += filter + " ";
+                }
             }
+
+            return output + "\n";
         }
-        output += "/r/n";
-        return output;
     }
 
     /**
@@ -350,7 +354,7 @@ public class Editor {
   /**
    * "undo" was entered. Reverts the current image to its most recent state
    * @param command the command given
-   * @return true, if this command quits the editor, false otherwise.
+   * @return true if this command quits the editor, false otherwise.
    */
     private String undo(Command command) {
         if (command.hasWord(2)) {
@@ -359,9 +363,34 @@ public class Editor {
 
         if (!this.currentImage.getChanges().isEmpty()){
             this.currentImage.setImage(this.currentImage.getChanges().pop());
-            return "Image reverted to previous state./r/n";
+            return i18nWordsMapping.get("imageRevertedPrompt");
         } else {
-            return "There is nothing to undo!";
+            return i18nWordsMapping.get("nothingToUndoPrompt");
         }
+    }
+
+    /**
+     * "put" was entered. Places a copy of the current working image into the image cache, using a string to identify it.
+     * @param command the command given
+     * @return true if this command quite the editor, false otherwise.
+     */
+    private String put(Command command) {
+        this.imageCache.put(command.getWord(2), this.currentImage);
+        return "Placed current working image into cache";
+    }
+
+    /**
+     * Replaces the current working image one from the image cache, using a string to identify it.
+     * @param command the command given
+     * @return true if this command quit the editor, false otherwise.
+     */
+    private String get(Command command) {
+        Image imageToSet = imageCache.get(command.getWord(2));
+
+        if (imageToSet == null){
+            return ("Unable to find an image with the key: " + command.getWord(2));
+        }
+        this.currentImage = imageToSet;
+        return ("Now working on: " + command.getWord(2));
     }
 }
