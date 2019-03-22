@@ -18,6 +18,9 @@ public class UndoCommand extends Command {
 
     if (!image.getChanges().isEmpty()){
       image.setImage(image.getChanges().pop());
+
+      image.undoFilter();
+
       editor.setImage(image);
       System.out.println(editor.getI18nMap().get("imageRevertedPrompt"));
     } else {

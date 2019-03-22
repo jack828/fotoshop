@@ -84,4 +84,11 @@ public class Image {
   public void addFilter(String filter) {
     this.filters.add(filter);
   }
+
+  /**
+   * Removes the most recent filter
+   */
+  public void undoFilter() {
+    this.filters.remove(this.filters.size() - 1);
+  }
 }
