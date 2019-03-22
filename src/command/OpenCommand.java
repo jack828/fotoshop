@@ -14,6 +14,7 @@ public class OpenCommand extends Command {
    * and use as the current image.
    * @param editor the editor instance
    */
+  @Override
   public void execute(Editor editor) {
     if (!this.hasWord(2)) {
       // if there is no second word, we don't know what to open...

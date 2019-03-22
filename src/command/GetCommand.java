@@ -8,6 +8,7 @@ public class GetCommand extends Command {
    * Replaces the current working image one from the image cache, using a string to identify it.
    * @param editor The editor instance
    */
+  @Override
   public void execute(Editor editor) {
       if (!this.hasWord(2)) {
         editor.print("getWhat");

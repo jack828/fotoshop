@@ -11,6 +11,7 @@ import java.awt.*;
     * Flip image horizontally
     * @param editor The editor instance
     */
+   @Override
    public void execute(Editor editor) {
        Image image = editor.getImage();
        if (image == null) {

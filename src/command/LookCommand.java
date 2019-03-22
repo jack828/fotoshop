@@ -7,6 +7,7 @@ public class LookCommand extends Command {
   /**
    * Report the status of the work bench
    */
+  @Override
   public void execute(Editor editor) {
     Image image = editor.getImage();
     if (image == null) {
@@ -16,13 +17,14 @@ public class LookCommand extends Command {
 
     editor.print("currentImageIs", image.getName());
 
-    String output = "";
+    StringBuilder output = new StringBuilder();
     for (String filter : image.getFilters()) {
       if (filter != null) {
-        output += filter + " ";
+        output.append(filter);
+        output.append(' ');
       }
     }
 
-    editor.print("filtersApplied", output);
+    editor.print("filtersApplied", output.toString());
   }
 }

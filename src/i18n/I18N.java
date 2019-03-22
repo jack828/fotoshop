@@ -55,7 +55,7 @@ public class I18N {
         try {
            message = ResourceBundle.getBundle(set[2], locale);
         } catch (NullPointerException | MissingResourceException e) {
-            System.out.printf("\nError: %s\nReturning to default language", e);
+            System.out.printf("%nError: %s%nReturning to default language", e);
             setLanguage("default");
         }
     }

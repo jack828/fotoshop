@@ -8,6 +8,7 @@ public class UndoCommand extends Command {
    * Reverts the current image to its most recent state
    * @param editor The editor instance
    */
+  @Override
   public void execute(Editor editor) {
     Image image = editor.getImage();
 
@@ -15,7 +16,10 @@ public class UndoCommand extends Command {
       editor.print("redoMethodPrompt");
       return;
     }
-
+    if(image == null){
+        editor.print("noImageLoaded");
+        return;
+    }
     if (!image.getChanges().isEmpty()){
       image.setImage(image.getChanges().pop());
 
