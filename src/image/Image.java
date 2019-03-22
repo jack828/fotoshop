@@ -46,31 +46,31 @@ public class Image {
   }
 
     /**
-     * Get the name of this image.Image.
+     * Get the name of this image.
      * @return Name of the image.
      */
   public String getName() { return this.name; }
 
     /**
-     * Sets the name of this image.Image
+     * Sets the name of this image.
      * @param name the name to be assigned.
      */
   public void setName(String name) { this.name = name; }
 
   /**
-   * Setter to allow a image.ColorImage to be saved as an image.Image
-   * @param image The image.ColorImage to be saved
+   * Setter to allow a image to be saved as an image.
+   * @param image The image to be saved
    */
   public void setImage(ColorImage image) {this.image = image;}
 
   /**
-   * Retrieves a list of changes made to the image.Image.
+   * Retrieves a list of changes made to the image.
    * @return a Stack of Changes made
    */
   public Stack<ColorImage> getChanges() {return this.changes;}
 
   /**
-   * Adds a new change to the list of image.Image changes
+   * Adds a new change to the list of image changes
    * @param snapshot the image snapshot to be added to the list
    */
   public void addChanges(ColorImage snapshot) {this.changes.push(snapshot);}

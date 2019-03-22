@@ -3,7 +3,6 @@ package command;
 import editor.Editor;
 import image.Image;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -22,14 +21,6 @@ import java.util.ArrayList;
 
 public abstract class Command {
     private ArrayList<String> words = new ArrayList<String>();
-
-    private static final String[] editorCommands = {
-      "open", "save", "look", "help", "quit", "script", "undo", "put", "get"
-    };
-    private static final String[] imageCommands = {
-      "mono","flipH","flipV", "rot90"
-    };
-
     /**
      * Create a command object. First and second word must be supplied, but
      * either one (or both) can be null.
