@@ -1,3 +1,9 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +22,10 @@ public class UserInterfaceTest
      */
     public UserInterfaceTest()
     {
+    }
+    public void delete(String fileName){
+        File file = new File(fileName);
+        file.delete();
     }
     /**
      * Sets up the test fixture.
@@ -41,10 +51,8 @@ public class UserInterfaceTest
     public void welcomeMessageTest(){
         String input = "quit";     
         String[] output = {"Welcome to Fotoshop!",
-                           "Fotoshop is an amazing new, image editing tool.",
-                           "Type 'help' if you need help.",
-                           "The current image is:",
-                           "Filters applied:"
+                           "Fotoshop is an amazing new image editing tool.",
+                           "Type 'help' if you need help."
                            }; 
 
         printCapture o = new printCapture(input);
@@ -61,11 +69,27 @@ public class UserInterfaceTest
         assertTrue(o.contains(output));
     }
     @Test
-    public void saveTest(){
+    public void saveNoImageTest(){
         String input = "save";
         String output = "Sorry no image is loaded.";
 
         printCapture o = new printCapture(input);
+        assertTrue(o.contains(output));
+    }
+    @Test
+    public void saveWhereTest(){
+        String input[] = {"open input.jpg","save"};
+        String output = "Save where?";
+
+        printCapture o = new printCapture(input);
+        assertTrue(o.contains(output));
+    }
+    @Test
+    public void saveWorkingTest(){
+        String input[] = {"open input.jpg","save aaa.jpg"};
+        String output = "Image saved to aaa.jpg";
+        printCapture o = new printCapture(input);
+        delete("aaa.jpg");
         assertTrue(o.contains(output));
     }
     @Test
@@ -85,4 +109,34 @@ public class UserInterfaceTest
         printCapture o = new printCapture(input);
         assertTrue(o.contains(output));
     }
+    @Test
+    public void openFound(){
+        String output = "Loaded input.jpg";
+        String input = "open input.jpg";
+        
+        printCapture o = new printCapture(input);
+        assertTrue(o.contains(output));
+    }
+    @Test
+    public void lookNoFiltersTest(){
+        String output = "No Image is currently loaded at the moment";
+        String input = "look";
+        
+        printCapture o = new printCapture(input);
+        assertTrue(o.contains(output));
+    }
+    @Test
+    public void lookFiltersTest(){
+        String[] input = {"open input.jpg",
+                          "mono",
+                          "flipH",
+                          "look"
+                        };
+        String[] output = {"The current image is input.jpg",
+                           "Filters applied:  mono flipH"
+                          };
+        printCapture o = new printCapture(input);
+        assertTrue(o.contains(output));
+    }
+    
 }

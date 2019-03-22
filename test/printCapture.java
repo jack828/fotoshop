@@ -1,8 +1,14 @@
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -20,7 +26,19 @@ public class printCapture {
     private PrintStream ps = new PrintStream(baos);
     private PrintStream old = System.out;
     private String result;
-        
+    
+
+    public void writeToFile( String output){
+        PrintWriter writer;
+        try {
+            writer = new PrintWriter("the-file-name.txt", "UTF-8");
+            writer.println(output);
+            writer.close();
+        } catch (FileNotFoundException | UnsupportedEncodingException ex) {
+            Logger.getLogger(UserInterfaceTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public printCapture(String input){
         System.setOut(ps);
         
@@ -50,6 +68,7 @@ public class printCapture {
         }
         input += "quit";
         
+        
         // Input String
         ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
         System.setIn(in);
@@ -75,7 +94,8 @@ public class printCapture {
         }
         return bool;
     }
-    public String getOutput(){
+    @Override
+    public String toString(){
         return this.result;
     }
 }
