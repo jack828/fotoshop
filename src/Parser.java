@@ -36,12 +36,14 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public Command getCommand()
+    public Command getCommand(boolean hidePrompt)
     {
         String inputLine;   // will hold the full input line
         ArrayList<String> words = new ArrayList<>();
 
-        System.out.print("> ");     // print prompt
+        if (!hidePrompt) {
+          System.out.print("> ");
+        }
 
         inputLine = reader.nextLine();
 
