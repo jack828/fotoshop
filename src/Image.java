@@ -15,11 +15,13 @@ public class Image {
   private ColorImage image;
   private ArrayList<String> filters;
   private Stack<ColorImage> changes;
+  private String name = "";
 
-  public Image(ColorImage image) {
+  public Image(String name, ColorImage image) {
     this.image = image;
     this.filters = new ArrayList<>();
     this.changes = new Stack();
+    this.name = name;
   }
 
   /**
@@ -38,6 +40,18 @@ public class Image {
   public ArrayList<String> getFilters() {
     return filters;
   }
+
+    /**
+     * Get the name of this Image.
+     * @return Name of the image.
+     */
+  public String getName() { return this.name; }
+
+    /**
+     * Sets the name of this Image
+     * @param name the name to be assigned.
+     */
+  public void setName(String name) { this.name = name; }
 
   /**
    * Setter to allow a ColorImage to be saved as an Image
