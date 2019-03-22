@@ -181,7 +181,7 @@ public class UserInterfaceTest
     @Test
     public void saveNoImageTest(){
         String input = "save";
-        String output = "No Image is currently loaded at the moment.";
+        String output = "No Image is currently loaded at the moment";
 
         printCapture o = new printCapture(input);
         assertTrue(o.contains(output));
