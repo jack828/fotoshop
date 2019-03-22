@@ -1,8 +1,9 @@
-import java.util.HashMap;
 import java.lang.reflect.Field;
 import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
+
+import i18n.I18N;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -10,34 +11,34 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class I18NJUnitTest 
+public class I18NJUnitTest
 {
-    
+
     public I18NJUnitTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() throws IllegalAccessException
     {
         resetStaticVariables();
-        checkStaticVariables(); 
+        checkStaticVariables();
     }
-    
+
     @After
     public void tearDown() {
     }
 
     /**
-     * Reset I18N modules static variables to null 
-     * @throws java.lang.IllegalAccessException 
+     * Reset i18n.I18N modules static variables to null
+     * @throws java.lang.IllegalAccessException
      */
     public void resetStaticVariables() throws IllegalAccessException
     {
@@ -50,9 +51,9 @@ public class I18NJUnitTest
             }
         }
     }
-    
+
     /**
-     * Check to Ensure I18N modules static variables are initialized to null.
+     * Check to Ensure i18n.I18N modules static variables are initialized to null.
      * @throws java.lang.IllegalAccessException
      */
     public void checkStaticVariables() throws IllegalAccessException
@@ -66,18 +67,18 @@ public class I18NJUnitTest
             }
         }
     }
-    
+
     /**
-     * This Test checks to see if setLanguage Method initializes the I18N module 
+     * This Test checks to see if setLanguage Method initializes the i18n.I18N module
      * "default" is passed to the setLanguage method as a argument
-     * Test should check to ensure all the I18N static variables are properly initialized
+     * Test should check to ensure all the i18n.I18N static variables are properly initialized
      * @throws java.lang.IllegalAccessException
      */
     @Test
     public void testSetLanguageMethodFlow() throws IllegalAccessException
-    {     
+    {
         I18N.setLanguage("default");
-        
+
         Class clazz = I18N.class;
         Field[] fields = clazz.getDeclaredFields();
         for(Field field : fields){
@@ -98,10 +99,10 @@ public class I18NJUnitTest
                     break;
             }
         }
-        
+
         Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
     }
-    
+
     /**
      * Checks to ensure that if language entered to setLanguage method does not exist
      * That the static variable 'message' does not get initialized
@@ -117,7 +118,7 @@ public class I18NJUnitTest
         field.setAccessible(true);
         Assert.assertEquals(null, field.get(null));
     }
-    
+
     /**
      * Checks to ensure that if a ResourceBundle does not exist
      * setLanguage method defaults to the default language
@@ -128,10 +129,10 @@ public class I18NJUnitTest
         I18N.setLanguage("nonexistent");
         Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
     }
-    
+
     /**
      * Checks to ensure the setLanguage method is capable of using another language as intended.
-     * 
+     *
      */
     @Test
     public void testSetLanguageLanguageChangeCapability(){
@@ -140,7 +141,7 @@ public class I18NJUnitTest
         I18N.setLanguage("japanese");
         Assert.assertEquals("おはよ世界!%n", I18N.getString("testString1"));
     }
-     
+
     /**
      * Checks to ensure that if ResourceBundle does not contain a particular key-pair value
      * A value of null is to be returned;
@@ -149,22 +150,22 @@ public class I18NJUnitTest
     public void testGetStringNoKey(){
         Assert.assertEquals(null, I18N.getString("ThisDoesNotExist"));
     }
-    
+
     /**
-     * Checks to ensure Correct Locale is returned if I18N module is properly initialized
+     * Checks to ensure Correct Locale is returned if i18n.I18N module is properly initialized
      * @throws java.lang.IllegalAccessException
      */
     @Test
     public void testGetCurrentLocaleMethod() throws IllegalAccessException
     {
         Assert.assertEquals(null, I18N.getCurrentLocale());
-        
+
         Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
         Assert.assertEquals(new Locale("en", "US"), I18N.getCurrentLocale());
-        
+
         resetStaticVariables();
         checkStaticVariables();
-        
+
         I18N.setLanguage("default");
         Assert.assertEquals(new Locale("en", "US"), I18N.getCurrentLocale());
     }

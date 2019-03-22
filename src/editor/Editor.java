@@ -1,7 +1,17 @@
+package editor;
+
+import command.Command;
+import command.OpenCommand;
+import image.ColorImage;
+import image.Image;
+import parser.Parser;
+import i18n.I18N;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import javax.imageio.ImageIO;
 import java.lang.reflect.Method;
@@ -36,6 +46,9 @@ public class Editor {
 
     private HashMap<String, Image> imageCache;
     private HashMap<String, String> i18nWordsMapping;
+
+    private HashMap<String, Command> commands;
+
     private static String[] EDITORTEXTSKEY = {
         "welcome",
         "goodbye",
@@ -69,6 +82,11 @@ public class Editor {
         this.i18nWordsMapping = returnLanguageHashMap("default");
         this.imageCache = new HashMap<String, Image>();
         this.finished = false;
+
+        this.commands = new HashMap<String, Command>();
+
+        commands.put("open", new OpenCommand());
+
     }
 
     public static Editor getInstance(){
@@ -80,7 +98,7 @@ public class Editor {
 
     /**
      * Returns a HashMap containing the mapping of keywords to specific words
-     * of the specific language the I18N module is set to.
+     * of the specific language the i18n.I18N module is set to.
      * @param language E.g. "default" or "japanese" et cetera
      * @return HashMap<String, String> consisting of the key-pair mapping
      * of specific key values to language specific words
@@ -104,14 +122,14 @@ public class Editor {
         // Enter the main command loop.  Here we repeatedly read commands and
         // execute them until the editing session is over.
         while (!this.finished) {
-            Command command = this.parser.getCommand(false);
-            processCommand(command);
+            ArrayList<String> commandWords = this.parser.getCommand(false);
+            processCommand(commandWords);
         }
         // Says: "Thank you for using Fotoshop.  Good bye."
         System.out.println(i18nWordsMapping.get("goodbye"));
     }
      /**
-     * A method for calling other methods based on an inputted String and Command
+     * A method for calling other methods based on an inputted String and command.Command
      *
      * @param o The Object the methods will be called from
      * @param command The command that will be passed to the method
@@ -129,13 +147,13 @@ public class Editor {
             // Method data type is initiated
             Method method;
 
-            if(commandClass.equals("Editor")){
+            if(commandClass.equals("editor.Editor")){
                 // An array of the of the Class datatype is made so that getDeclaredMethod
                 // will know the datatypes of the arguments passed to it
                 Class[] cArgs = { Command.class };
                 // The method is created by passing the methods name with the data type of its parameter
                 method = c.getDeclaredMethod(commandWord, cArgs);
-                // Command is passed to method
+                // command.Command is passed to method
                 method.invoke(o, command);
             }else{
                 // This part is for methods that do not have arguments
@@ -167,18 +185,25 @@ public class Editor {
     /**
      * Given a command, edit (that is: execute) the command.
      *
-     * @param command The command to be processed.
+     * @param commandWords The command to be processed.
      */
-    private void processCommand(Command command) {
-        // If word inputted is not in list of Command words
-        if (!command.isValid()) {
+    private void processCommand(ArrayList<String> commandWords) {
+        // If word inputted is not in list of command.Command words
+        Command command = this.commands.get(commandWords.get(0));
+
+        if (command == null) {
+          // TODO fallback command
             System.out.println(i18nWordsMapping.get("iDontKnow"));
             return;
         }
 
-        if ((command.getCommandClass()).equals("Editor")) {
+        command.setWords(commandWords);
+
+        command.execute(this);
+        /*
+        if ((command.getCommandClass()).equals("editor.Editor")) {
             callMethod(this, command);
-        } else if ((command.getCommandClass()).equals("Image")) {
+        } else if ((command.getCommandClass()).equals("image.Image")) {
             if (this.currentImage != null) {
                 this.currentImage.addChanges(this.currentImage.getImage());
                 callMethod(this.currentImage, command);
@@ -186,6 +211,7 @@ public class Editor {
                 System.out.printf(i18nWordsMapping.get("noImageLoaded"));
             }
         }
+        */
     }
 
 //----------------------------------
@@ -197,7 +223,7 @@ public class Editor {
      * message and a list of the command words.
      */
     private void help(Command command) {
-        System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
+//        System.out.printf(i18nWordsMapping.get("youAreUsingFotoshop"), Command.getCommands());
         System.out.println();
         return;
     }
@@ -205,7 +231,7 @@ public class Editor {
     /**
      * Load an image from a file.
      * @param name The name of the image file
-     * @return a ColorImage containing the image
+     * @return a image.ColorImage containing the image
      */
     private ColorImage loadImage(String name) {
         ColorImage img = null;
@@ -245,7 +271,7 @@ public class Editor {
             help(command);
         } else {
             currentImage = new Image(inputName, img);
-            // TODO: put image name in the Image class
+            // TODO: put image name in the image.Image class
             currentImage.setName(inputName);
             // Says: "Loaded "
             System.out.printf(i18nWordsMapping.get("loaded"), currentImage.getName());
@@ -333,8 +359,8 @@ public class Editor {
             scriptParser.setInputStream(inputStream);
             while (!this.finished) {
                 try {
-                    Command cmd = scriptParser.getCommand(true);
-                    processCommand(cmd);
+                    ArrayList<String> commandWords = scriptParser.getCommand(true);
+                    processCommand(commandWords);
                 } catch (Exception ex) {
                     return;
                 }
