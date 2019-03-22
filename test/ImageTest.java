@@ -41,9 +41,37 @@ public class ImageTest {
     @Test
     public void monoTest() {
         String[] input = {"open input.jpg","mono","save mono.jpg"};
-
         printCapture o = new printCapture(input);
-        boolean check = (new ImageCompare("mono.jpg","test_image/mono.jpg")).same();
+        ImageCompare imageComare = new ImageCompare("mono.jpg","test_image/mono.jpg");
+        boolean check = imageComare.same();
+        imageComare.delete();
+        assertTrue(check);
+    }
+    @Test
+    public void rot90Test() {
+        String[] input = {"open input.jpg","rot90","save rot90.jpg"};
+        printCapture o = new printCapture(input);
+        ImageCompare imageComare = new ImageCompare("rot90.jpg","test_image/rot90.jpg");
+        boolean check = imageComare.same();
+        imageComare.delete();
+        assertTrue(check);
+    }
+    @Test
+    public void flipHTest() {
+        String[] input = {"open input.jpg","flipH","save flipH.jpg"};
+        printCapture o = new printCapture(input);
+        ImageCompare imageComare = new ImageCompare("flipH.jpg","test_image/flipH.jpg");
+        boolean check = imageComare.same();
+        imageComare.delete();
+        assertTrue(check);
+    }
+    @Test
+    public void flipVTest() {
+        String[] input = {"open input.jpg","flipV","save flipV.jpg"};
+        printCapture o = new printCapture(input);
+        ImageCompare imageComare = new ImageCompare("flipV.jpg","test_image/flipV.jpg");
+        boolean check = imageComare.same();
+        imageComare.delete();
         assertTrue(check);
     }
 }
