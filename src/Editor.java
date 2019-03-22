@@ -36,6 +36,7 @@ public class Editor {
     private static Editor editor;
 
     private HashMap<String, String> i18nWordsMapping;
+    private HashMap<String, Image> cache = new HashMap<>();
     private static String[] EDITORTEXTSKEY = {
         "welcome",
         "goodbye",
@@ -188,7 +189,30 @@ public class Editor {
 //----------------------------------
 // Implementations of user commands:
 //----------------------------------
-
+    /**
+     * Add a copy of the current image to the cache as <name>.
+     */
+    private String put(Command command){
+        String name = command.getWord(2);
+        if(null != this.currentImage){
+            this.cache.put(name,this.currentImage);
+            return "Image saved as "+name;
+        }else{
+            return "Sorry no image is loaded";
+        }
+    }
+    /**
+     * Replaces the current working image with a copy of the image <name> from the cache.
+     */
+    private String get(Command command){
+        String name = command.getWord(2);
+        if(this.cache.containsKey(name)){
+            this.currentImage = this.cache.get(name);
+            return name+" is loaded";
+        }else{
+            return "Sorry "+name+" does not exist in cache";
+        }
+    }
     /**
      * Print out some help information. Here we print some useless, cryptic
      * message and a list of the command words.
