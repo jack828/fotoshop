@@ -17,36 +17,6 @@ import org.junit.Test;
  */
 public class UserInterfaceTest
 {
-    /**
-     * Default constructor for test class WelcomeTest
-     */
-    public UserInterfaceTest()
-    {
-    }
-    public void delete(String fileName){
-        File file = new File(fileName);
-        file.delete();
-    }
-    /**
-     * Sets up the test fixture.
-     *
-     * Called before every test case method.
-     */
-    @Before
-    public void setUp()
-    {
-    }
-
-    /**
-     * Tears down the test fixture.
-     *
-     * Called after every test case method.
-     */
-    @After
-    public void tearDown()
-    {
-    }
-    
     @Test
     public void welcomeMessageTest(){
         String input = "quit";     
@@ -71,7 +41,7 @@ public class UserInterfaceTest
     @Test
     public void saveNoImageTest(){
         String input = "save";
-        String output = "No Image is currently loaded at the moment.";
+        String output = "No Image is currently loaded at the moment";
 
         printCapture o = new printCapture(input);
         assertTrue(o.contains(output));
@@ -82,14 +52,6 @@ public class UserInterfaceTest
         String output = "Save where?";
 
         printCapture o = new printCapture(input);
-        assertTrue(o.contains(output));
-    }
-    @Test
-    public void saveWorkingTest(){
-        String input[] = {"open input.jpg","save aaa.jpg"};
-        String output = "Image saved to aaa.jpg";
-        printCapture o = new printCapture(input);
-        delete("aaa.jpg");
         assertTrue(o.contains(output));
     }
     @Test

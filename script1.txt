@@ -1,8 +1,0 @@
-open input.jpg
-look
-rot90
-mono
-flipH
-look
-save output.jpg
-quit
