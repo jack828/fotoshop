@@ -86,16 +86,16 @@ public class I18NJUnitTest
             switch(field.getName()){
                 case "SETS":
                     Map<String, String[]> set = (Map<String, String[]>)field.get(null);
-                    Assert.assertArrayEquals(new String[]{"en", "US", "default"}, set.get("default"));
+                    Assert.assertArrayEquals(new String[]{"en", "GB", "default"}, set.get("default"));
                     Assert.assertArrayEquals(new String[]{"jp", "JP", "testProperties"}, set.get("japanese"));
                     break;
                 case "locale":
-                    Assert.assertEquals(new Locale("en", "US"), (Locale)field.get(null));
+                    Assert.assertEquals(new Locale("en", "GB"), (Locale)field.get(null));
                     break;
                 case "message":
                     ResourceBundle bundle = (ResourceBundle)field.get(null);
                     Assert.assertEquals("default", bundle.getBaseBundleName());
-                    Assert.assertEquals(new Locale("en", "US"), bundle.getLocale());
+                    Assert.assertEquals(new Locale("en", "GB"), bundle.getLocale());
                     break;
             }
         }
@@ -161,12 +161,12 @@ public class I18NJUnitTest
         Assert.assertEquals(null, I18N.getCurrentLocale());
 
         Assert.assertEquals("Hello World!%n", I18N.getString("testString1"));
-        Assert.assertEquals(new Locale("en", "US"), I18N.getCurrentLocale());
+        Assert.assertEquals(new Locale("en", "GB"), I18N.getCurrentLocale());
 
         resetStaticVariables();
         checkStaticVariables();
 
         I18N.setLanguage("default");
-        Assert.assertEquals(new Locale("en", "US"), I18N.getCurrentLocale());
+        Assert.assertEquals(new Locale("en", "GB"), I18N.getCurrentLocale());
     }
 }
