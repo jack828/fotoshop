@@ -1,3 +1,5 @@
+import editor.Editor;
+
 /**
  * This is the main class for the Fotoshop application
  *
@@ -5,7 +7,8 @@
  * @version 2018.12.12
  */
 public class Main {
-   public static void main(String[] args){
-        (new Editor()).edit();
+   public static void main(String[] args) {
+     new Editor().edit();
+
     }
 }

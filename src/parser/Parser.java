@@ -1,3 +1,7 @@
+package parser;
+
+import command.Command;
+
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -9,7 +13,7 @@ import java.util.Scanner;
  * This parser reads user input and tries to interpret it as an "Adventure"
  * command. Every time it is called it reads a line from the terminal and
  * tries to interpret the line as a three word command. It returns the command
- * as an object of class Command.
+ * as an object of class command.Command.
  *
  * The parser has a set of known command words. It checks user input against
  * the known commands, and if the input is not one of the known commands, it
@@ -36,7 +40,7 @@ public class Parser
     /**
      * @return The next command from the user.
      */
-    public Command getCommand(boolean hidePrompt)
+    public ArrayList<String> getCommand(boolean hidePrompt)
     {
         String inputLine;   // will hold the full input line
         ArrayList<String> words = new ArrayList<>();
@@ -54,6 +58,6 @@ public class Parser
             words.add(tokenizer.next());
         }
 
-        return new Command(words);
+        return words;
     }
 }
