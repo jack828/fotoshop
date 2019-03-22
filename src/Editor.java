@@ -177,11 +177,11 @@ public class Editor {
         }
 
         if ((command.getCommandClass()).equals("Editor")) {
-            wantToQuit = callMethod(this,command);
+            callMethod(this, command);
         } else if ((command.getCommandClass()).equals("Image")) {
             if (this.currentImage != null) {
                 this.currentImage.addChanges(this.currentImage.getImage());
-                wantToQuit = callMethod(this.currentImage,command);
+                callMethod(this.currentImage, command);
             } else {
                 System.out.printf(i18nWordsMapping.get("noImageLoaded"));
             }
@@ -305,7 +305,7 @@ public class Editor {
             }
 
             System.out.println();
-            return false;
+            return;
         }
     }
 
