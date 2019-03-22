@@ -156,11 +156,12 @@ public class Editor {
      * Get a string representation of the available commands
      */
     public String getCommands() {
-      String output = "";
+      StringBuilder output = new StringBuilder();
       for (String key : this.commands.keySet()) {
-        output += key + " ";
+        output.append(key);
+        output.append(' ');
       }
-      return output;
+      return output.toString();
     }
 
     /**
