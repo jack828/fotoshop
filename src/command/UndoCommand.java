@@ -12,7 +12,7 @@ public class UndoCommand extends Command {
     Image image = editor.getImage();
 
     if (this.hasWord(2)) {
-      System.out.println(editor.getI18nMap().get("redoMethodPrompt"));
+      editor.print("redoMethodPrompt");
       return;
     }
 
@@ -22,9 +22,9 @@ public class UndoCommand extends Command {
       image.undoFilter();
 
       editor.setImage(image);
-      System.out.println(editor.getI18nMap().get("imageRevertedPrompt"));
+      editor.print("imageRevertedPrompt");
     } else {
-      System.out.println(editor.getI18nMap().get("nothingToUndoPrompt"));
+      editor.print("nothingToUndoPrompt");
     }
   }
 }

@@ -70,7 +70,8 @@ public class Editor {
         "noSuchMethod",
         "redoMethodPrompt",
         "imageRevertedPrompt",
-        "nothingToUndoPrompt"
+        "nothingToUndoPrompt",
+        "imageInCache"
     };
 
     /**
@@ -164,6 +165,13 @@ public class Editor {
     }
 
     /**
+     *
+     */
+    public void print(String i18nKey, String ... formats) {
+      System.out.printf(i18nWordsMapping.get(i18nKey), formats);
+    }
+
+    /**
      * Returns a HashMap containing the mapping of keywords to specific words
      * of the specific language the i18n.I18N module is set to.
      * @param language E.g. "default" or "japanese" et cetera
@@ -180,6 +188,7 @@ public class Editor {
 
         return languageHashMap;
     }
+
     /**
      * Main edit routine. Loops until the end of the editing session.
      */
@@ -192,14 +201,14 @@ public class Editor {
             ArrayList<String> commandWords = this.parser.getCommand(false);
             processCommand(commandWords);
         }
-        System.out.println(i18nWordsMapping.get("goodbye"));
+        this.print("goodbye");
     }
 
     /**
      * Print out the opening message for the user.
      */
     private void printWelcome() {
-        System.out.printf(i18nWordsMapping.get("welcome"));
+        this.print("welcome");
     }
 
     /**

@@ -16,7 +16,7 @@ import java.awt.*;
    public void execute(Editor editor) {
      Image image = editor.getImage();
      if (image == null) {
-       System.out.println(editor.getI18nMap().get("noImageLoaded"));
+       editor.print("noImageLoaded");
        return;
      }
 

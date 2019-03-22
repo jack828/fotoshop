@@ -19,7 +19,7 @@ public class ScriptCommand extends Command {
   public void execute(Editor editor) {
     if (!this.hasWord(2)) {
       // if there is no second word, we don't know what to open...
-      System.out.println(editor.getI18nMap().get("whichScript"));
+      editor.print("whichScript");
       return;
     }
 
@@ -39,8 +39,7 @@ public class ScriptCommand extends Command {
       // Reset the internal state of execution - the _script_ has finished, not the program
       editor.setFinished(false);
     } catch (FileNotFoundException ex) {
-      System.out.printf(editor.getI18nMap().get("cannotFind"), scriptName);
-      System.out.println();
+      editor.print("cannotFind", scriptName);
     } catch (IOException ex) {
       throw new RuntimeException(editor.getI18nMap().get("panic"));
     }

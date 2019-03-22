@@ -17,7 +17,7 @@ public class OpenCommand extends Command {
   public void execute(Editor editor) {
     if (!this.hasWord(2)) {
       // if there is no second word, we don't know what to open...
-      System.out.println(editor.getI18nMap().get("openWhat"));
+      editor.print("openWhat");
       return;
     }
 
@@ -27,9 +27,9 @@ public class OpenCommand extends Command {
     try {
       img = new ColorImage(ImageIO.read(new File(inputName)));
     } catch (IOException e) {
-      System.out.printf(editor.getI18nMap().get("cannotFindImageFile"), inputName);
+      editor.print("cannotFindImageFile", inputName);
 
-      System.out.printf(editor.getI18nMap().get("cwdIs"), System.getProperty("user.dir"));
+      editor.print("cwdIs", System.getProperty("user.dir"));
     }
 
     if (img != null) {
@@ -37,8 +37,7 @@ public class OpenCommand extends Command {
 
       editor.setImage(image);
 
-      System.out.printf(editor.getI18nMap().get("loaded"), inputName);
-      System.out.println();
+      editor.print("loaded", inputName);
     }
   }
 }

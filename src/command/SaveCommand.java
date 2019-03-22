@@ -15,12 +15,12 @@ public class SaveCommand extends Command {
   public void execute(Editor editor) {
     Image image = editor.getImage();
     if (image == null) {
-      System.out.println(editor.getI18nMap().get("noImageLoaded"));
+      editor.print("noImageLoaded");
       return;
     }
 
     if (!this.hasWord(2)) {
-      System.out.println(editor.getI18nMap().get("saveWhere"));
+      editor.print("saveWhere");
       return;
     }
 
@@ -28,7 +28,7 @@ public class SaveCommand extends Command {
     try {
       File outputFile = new File(outputName);
       ImageIO.write(image.getImage(), "jpg", outputFile);
-      System.out.printf(editor.getI18nMap().get("imageSavedTo"), outputName);
+      editor.print("imageSavedTo", outputName);
       System.out.println();
     } catch (IOException e) {
       System.out.println(e.getMessage());

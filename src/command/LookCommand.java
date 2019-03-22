@@ -10,21 +10,19 @@ public class LookCommand extends Command {
   public void execute(Editor editor) {
     Image image = editor.getImage();
     if (image == null) {
-      System.out.println(editor.getI18nMap().get("noImageLoaded"));
+      editor.print("noImageLoaded");
       return;
     }
 
-    System.out.printf(editor.getI18nMap().get("currentImageIs"), image.getName());
-    System.out.println();
-    System.out.print(editor.getI18nMap().get("filtersApplied") + " ");
-    System.out.println();
+    editor.print("currentImageIs", image.getName());
 
+    String output = "";
     for (String filter : image.getFilters()) {
       if (filter != null) {
-        System.out.print(filter + " ");
+        output += filter + " ";
       }
     }
 
-    System.out.println();
+    editor.print("filtersApplied", output);
   }
 }

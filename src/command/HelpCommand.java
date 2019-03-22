@@ -8,6 +8,6 @@ public class HelpCommand extends Command {
    * message and a list of the command words.
    */
   public void execute(Editor editor) {
-    System.out.printf(editor.getI18nMap().get("youAreUsingFotoshop"), editor.getCommands());
+    editor.print("youAreUsingFotoshop", editor.getCommands());
   }
 }

@@ -9,11 +9,11 @@ public class PutCommand extends Command {
    */
   public void execute(Editor editor) {
       if (!this.hasWord(2)) {
-        System.out.println(editor.getI18nMap().get("putWhat"));
+        editor.print("putWhat");
         return;
       }
 
       editor.addToImageCache(this.getWord(2), editor.getImage());
-      System.out.println("Placed current working image into cache");
+      editor.print("imageInCache");
   }
 }

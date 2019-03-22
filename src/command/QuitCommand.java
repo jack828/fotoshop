@@ -8,7 +8,7 @@ public class QuitCommand extends Command {
    */
   public void execute(Editor editor) {
     if (this.hasWord(2)) {
-      System.out.println(editor.getI18nMap().get("quitWhat"));
+      editor.print("quitWhat");
     } else {
       editor.setFinished(true);
     }

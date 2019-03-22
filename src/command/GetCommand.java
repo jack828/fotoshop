@@ -10,18 +10,18 @@ public class GetCommand extends Command {
    */
   public void execute(Editor editor) {
       if (!this.hasWord(2)) {
-        System.out.println(editor.getI18nMap().get("getWhat"));
+        editor.print("getWhat");
         return;
       }
 
       Image imageToSet = editor.getFromImageCache(this.getWord(2));
 
       if (imageToSet == null) {
-        System.out.printf(editor.getI18nMap().get("cannotFindKey"), this.getWord(2));
+        editor.print("cannotFindKey", this.getWord(2));
         return;
       }
 
       editor.setImage(imageToSet);
-      System.out.printf(editor.getI18nMap().get("currentImageIs"), this.getWord(2));
+      editor.print("currentImageIs", this.getWord(2));
   }
 }
