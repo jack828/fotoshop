@@ -7,7 +7,7 @@ import editor.Editor;
  * @version 2018.12.12
  */
 public class Main {
-   public static void main(String[] args){
-        Editor.getInstance().edit();
+   public static void main(String[] args) {
+     new Editor().edit();
     }
 }

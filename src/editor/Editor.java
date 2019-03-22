@@ -41,7 +41,6 @@ public class Editor {
     private boolean finished;
 
     private Scanner reader;
-    private static Editor editor;
 
     private HashMap<String, Image> imageCache;
     private HashMap<String, String> i18nWordsMapping;
@@ -77,7 +76,7 @@ public class Editor {
     /**
      * Create the editor and initialise its parser.
      */
-    private Editor() {
+    public Editor() {
         this.parser = new Parser();
         this.reader = new Scanner(System.in);
         this.i18nWordsMapping = returnLanguageHashMap("default");
@@ -102,13 +101,6 @@ public class Editor {
         commands.put("rot90", new Rot90Command());
         commands.put("flipH", new FlipHCommand());
         commands.put("flipV", new FlipVCommand());
-    }
-
-    public static Editor getInstance() {
-        if (editor == null) {
-            Editor.editor = new Editor();
-        }
-        return editor;
     }
 
     /**
